@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark" data-color="purple">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuyu HANASU Studio 🎙️</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg-base: #121318;
+            --bg-panel: #1b1c24;
+            --bg-card: #262834;
+            --primary: #8c7ae6;
+            --primary-hover: #9c8ade;
+            --accent: #00d2d3;
+            --accent-pink: #ff7675;
+            --text-main: #f5f6fa;
+            --text-sub: #a4b0be;
+            --border-color: #353b48;
+            --radius-main: 12px;
+        }
+
+        [data-theme="light"] {
+            --bg-base: #f1f2f6;
+            --bg-panel: #ffffff;
+            --bg-card: #e4e7eb;
+            --text-main: #2f3542;
+            --text-sub: #57606f;
+            --border-color: #ced6e0;
+        }
+
+        [data-color="purple"] { --primary: #8c7ae6; --primary-hover: #9c8ade; }
+        [data-color="blue"]   { --primary: #00a8ff; --primary-hover: #0097e6; }
+        [data-color="green"]  { --primary: #44bd32; --primary-hover: #4cd137; }
+        [data-color="yellow"] { --primary: #fbc531; --primary-hover: #e1b12c; }
+        [data-color="red"]    { --primary: #e84118; --primary-hover: #c23616; }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif; }
+        body {
+            margin: 0; padding: 0; background: var(--bg-base); color: var(--text-main);
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        header {
+            height: 54px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0;
+        }
+        header h1 { font-size: 1.15em; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--primary); }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        .app-container {
+            flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden;
+        }
+
+        .sidebar {
+            background: var(--bg-panel); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; padding: 12px; gap: 12px; overflow-y: auto;
+        }
+
+        .file-select-btn {
+            border: 2px dashed var(--primary); background: rgba(140, 122, 230, 0.08);
+            border-radius: var(--radius-main); padding: 14px; text-align: center;
+            cursor: pointer; transition: 0.2s; color: var(--text-main); font-weight: bold;
+        }
+        .file-select-btn:hover { background: rgba(140, 122, 230, 0.18); border-color: var(--accent); }
+        .file-select-btn p { margin: 4px 0 0 0; font-size: 0.75em; color: var(--text-sub); font-weight: normal; }
+
+        .voice-card {
+            background: var(--bg-card); padding: 10px; border-radius: 8px; font-size: 0.8em; border: 1px solid var(--border-color);
+            display: flex; gap: 12px; align-items: center;
+        }
+        .voice-icon {
+            width: 46px; height: 46px; border-radius: 6px; background: var(--bg-base);
+            object-fit: cover; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.4em;
+        }
+        .voice-details { flex: 1; overflow: hidden; }
+        .voice-details div { margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .voice-details span { color: var(--primary); font-weight: bold; }
+
+        .phoneme-section {
+            flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 0;
+        }
+        .phoneme-grid {
+            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 4px;
+            overflow-y: auto; background: var(--bg-base); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);
+        }
+        .phoneme-tag {
+            background: var(--bg-card); font-size: 0.8em; padding: 6px 2px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-weight: bold; color: var(--text-main);
+        }
+        .phoneme-tag.has-oto { border-color: var(--primary); color: var(--primary); background: rgba(140, 122, 230, 0.15); }
+
+        .main-content {
+            display: flex; flex-direction: column; padding: 14px; gap: 10px; background: var(--bg-base); overflow-y: auto;
+        }
+
+        .sentences-header { display: flex; justify-content: space-between; align-items: center; }
+        .sentences-container {
+            display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; padding-right: 4px;
+        }
+        .sentence-row {
+            display: flex; gap: 8px; align-items: center; background: var(--bg-panel); padding: 6px 10px;
+            border-radius: 8px; border: 2px solid transparent; transition: 0.2s;
+        }
+        .sentence-row.active { border-color: var(--primary); }
+        .sentence-row .num { font-size: 0.8em; font-weight: bold; width: 20px; color: var(--text-sub); text-align: center; }
+        .sentence-row input[type="text"] {
+            flex: 1; background: var(--bg-base); border: 1px solid var(--border-color);
+            color: var(--text-main); border-radius: 6px; padding: 6px 10px; font-size: 0.9em; outline: none;
+        }
+        .sentence-row input[type="text"]:focus { border-color: var(--primary); }
+
+        .intl-card {
+            background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px 12px;
+            border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;
+        }
+        .intl-card-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: var(--text-sub); font-weight: bold; }
+        .intl-tools { display: flex; gap: 6px; align-items: center; }
+
+        /* キャンバス容器に横スクロールを導入 */
+        .canvas-wrapper { 
+            position: relative; 
+            width: 100%; 
+            height: 260px; 
+            background: var(--bg-base); 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            overflow-x: auto; 
+            overflow-y: hidden; 
+        }
+        canvas { display: block; cursor: crosshair; height: 100%; }
+
+        .durations-editor {
+            display: flex; gap: 6px; overflow-x: auto; padding: 6px 4px; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color);
+        }
+        .duration-item {
+            display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.75em; min-width: 48px;
+        }
+        .duration-item label { color: var(--text-sub); font-weight: bold; }
+        .duration-item input[type="number"] {
+            width: 100%; text-align: center; background: var(--bg-base); border: 1px solid var(--border-color);
+            color: var(--primary); border-radius: 4px; padding: 3px; font-weight: bold; font-size: 0.85em; outline: none;
+        }
+        .duration-item input[type="number"]:focus { border-color: var(--primary); }
+
+        .params-card {
+            background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px 12px;
+            border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;
+        }
+        .params-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;
+        }
+        .param-group { display: flex; flex-direction: column; gap: 2px; font-size: 0.75em; }
+        .param-group label { display: flex; justify-content: space-between; font-weight: bold; color: var(--text-sub); }
+        .param-group label span { color: var(--primary); }
+        input[type="range"] { accent-color: var(--primary); width: 100%; cursor: pointer; }
+
+        .mode-toggle { display: flex; gap: 12px; align-items: center; font-size: 0.8em; color: var(--text-sub); }
+
+        .controls-bar { display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: auto; padding-top: 4px; }
+        .btn {
+            border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; transition: 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-accent { background: var(--accent); color: #121318; }
+        .btn-accent:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-secondary.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-sm { padding: 4px 8px; font-size: 0.75em; border-radius: 6px; }
+        .btn-danger { background: var(--accent-pink); color: white; }
+
+        select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; outline: none; }
+
+        footer {
+            height: 34px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center; font-size: 0.75em; color: var(--text-sub); flex-shrink: 0; gap: 12px;
+        }
+        footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎙️ Yuyu HANASU Studio</h1>
+        <div class="header-actions">
+            <select id="theme-select" onchange="changeTheme(this.value)">
+                <option value="dark">🌙 ダーク</option>
+                <option value="light">☀️ ライト</option>
+            </select>
+            <select id="color-select" onchange="changeColor(this.value)">
+                <option value="purple">🟣 パープル</option>
+                <option value="blue">🔵 ブルー</option>
+                <option value="green">🟢 グリーン</option>
+                <option value="yellow">🟡 イエロー</option>
+                <option value="red">🔴 レッド</option>
+            </select>
+            <span class="btn btn-secondary btn-sm" id="status-text">音源未読み込み</span>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- サイドバー -->
+        <div class="sidebar">
+            <div class="file-select-btn" onclick="document.getElementById('file-input').click()">
+                <div style="font-size: 1.5em;">📦</div>
+                <div style="font-size: 0.85em;">UTAU Zip音源を選択</div>
+                <p>クリックして .zip ファイルを選択</p>
+                <input type="file" id="file-input" accept=".zip" style="display:none;" onchange="handleFileSelect(event)">
+            </div>
+
+            <div class="voice-card">
+                <div class="voice-icon" id="voice-icon">🎙️</div>
+                <div class="voice-details">
+                    <div>音源名: <span id="info-name">未読み込み</span></div>
+                    <div>音素数: <span id="info-count">0</span></div>
+                </div>
+            </div>
+
+            <div class="phoneme-section">
+                <div style="font-size: 0.8em; font-weight: bold; color: var(--text-sub);">対応音素エイリアス一覧:</div>
+                <div class="phoneme-grid" id="phoneme-grid"></div>
+            </div>
+        </div>
+
+        <!-- メインパネル -->
+        <div class="main-content">
+            <div class="sentences-header">
+                <span style="font-size: 0.85em; font-weight: bold; color: var(--text-sub);">📝 文章リスト (最大10文)</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('txt-input').click()">📄 テキスト読み込み (.txt)</button>
+                    <input type="file" id="txt-input" accept=".txt" style="display:none;" onchange="handleTxtSelect(event)">
+                    <button class="btn btn-secondary btn-sm" onclick="addSentence()">+ 文を追加</button>
+                </div>
+            </div>
+            
+            <div class="sentences-container" id="sentences-container"></div>
+
+            <!-- イントネーション エディタ -->
+            <div class="intl-card">
+                <div class="intl-card-header">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span>🎶 イントネーション / ピッチカーブ (ドラッグ・フリー描画対応)</span>
+                        <div class="intl-tools">
+                            <button class="btn btn-secondary btn-sm" onclick="applyPreset('question')">❓ 疑問形</button>
+                            <button class="btn btn-secondary btn-sm" onclick="applyPreset('exclaim')">❗ 強調</button>
+                        </div>
+                    </div>
+                    <div class="intl-tools">
+                        <button class="btn btn-secondary btn-sm" onclick="resetIntonation()">リセット</button>
+                    </div>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="pitch-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- 音節長（長さ）の数値ダイレクト調整エリア -->
+            <div style="font-size: 0.8em; font-weight: bold; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
+                <span>⏳ 音節ごとの長さ数値指定 (秒)</span>
+                <span style="font-size: 0.75em; opacity: 0.8;">※標準速度 0.30s に対する指定値</span>
+            </div>
+            <div class="durations-editor" id="durations-editor"></div>
+
+            <!-- パラメータコントロール -->
+            <div class="params-card">
+                <div class="mode-toggle">
+                    <span>調整対象:</span>
+                    <label><input type="radio" name="param-mode" value="single" checked onchange="toggleParamMode()"> 選択中のみ</label>
+                    <label><input type="radio" name="param-mode" value="all" onchange="toggleParamMode()"> 全文章一括</label>
+                    <span style="font-size: 0.75em; color: var(--text-sub); margin-left: auto;">※数値をダブルクリックで初期化</span>
+                </div>
+                <div class="params-grid">
+                    <div class="param-group">
+                        <label>話す速度 (Speed) <span id="val-speed" ondblclick="resetParam('speed')">0.30s</span></label>
+                        <input type="range" id="param-speed" min="0.10" max="0.60" step="0.01" value="0.30" oninput="updateParam('speed', this.value)">
+                    </div>
+                    <div class="param-group">
+                        <label>基本ピッチ (Pitch) <span id="val-pitch" ondblclick="resetParam('pitch')">0</span></label>
+                        <input type="range" id="param-pitch" min="-12" max="12" step="1" value="0" oninput="updateParam('pitch', this.value)">
+                    </div>
+                    <div class="param-group">
+                        <label>なめらかさ (Fade) <span id="val-smooth" ondblclick="resetParam('smooth')">40%</span></label>
+                        <input type="range" id="param-smooth" min="0" max="100" step="5" value="40" oninput="updateParam('smooth', this.value)">
+                    </div>
+                    <div class="param-group">
+                        <label>トーン (Tone) <span id="val-tone" ondblclick="resetParam('tone')">0</span></label>
+                        <input type="range" id="param-tone" min="-10" max="10" step="1" value="0" oninput="updateParam('tone', this.value)">
+                    </div>
+                    <div class="param-group">
+                        <label>音量 (Volume) <span id="val-volume" ondblclick="resetParam('volume')">1.0</span></label>
+                        <input type="range" id="param-volume" min="0.1" max="1.5" step="0.05" value="1.0" oninput="updateParam('volume', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-bar">
+                <button class="btn btn-primary" onclick="speakAll()">▶ 選択/一括 再生</button>
+                <button class="btn btn-accent" onclick="exportWav()">💾 WAV書き出し</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>Coding: Gemini</span> | 
+        <span>Site Suggestion: <a href="https://x.com/yourei_osirase" target="_blank" rel="noopener noreferrer">ゆーれい</a></span> | 
+        <span>© Yuyu HANASU Studio</span>
+    </footer>
+
+    <script>
+        let voiceLibrary = { name: "未選択", samples: {}, iconUrl: null };
+        let audioCtx = null;
+
+        const kanjiDict = {
+            '私':'わたし','僕':'ぼく','俺':'おれ','今日':'きょう','明日':'あした','昨日':'きのう',
+            '時間':'じかん','今':'いま','話':'はなし','声':'こえ','音':'おと','歌':'うた',
+            '漢字':'かんじ','読み':'よみ','テスト':'てすと','設定':'せってい','完了':'かんりょう',
+            '機能':'きのう','速度':'そくど','調整':'ちょうせい','作成':'さくせい','選択':'せんたく',
+            '日本語':'にほんご','音声':'おんせい','合成':'ごうせい','変換':'へんかん','画面':'がめん',
+            '操作':'そうさ','表示':'ひょうじ','入力':'にゅうりょく','出力':'しゅつりょく','保存':'ほぞん'
+        };
+
+        const romajiMap = {
+            'kya':'きゃ','kyu':'きゅ','kyo':'きょ',
+            'sha':'しゃ','shu':'しゅ','sho':'しょ','sya':'しゃ','syu':'しゅ','syo':'しょ',
+            'cha':'ちゃ','chu':'ちゅ','cho':'ちょ',
+            'nya':'にゃ','nyu':'にゅ','nyo':'にょ',
+            'hya':'ひゃ','hyu':'ひゅ','hyo':'ひょ',
+            'mya':'みゃ','myu':'みゅ','myo':'みょ',
+            'rya':'りゃ','ryu':'りゅ','ryo':'りょ',
+            'gya':'ぎゃ','gyu':'ぎゅ','gyo':'ぎょ',
+            'jya':'じゃ','jyu':'じゅ','jyo':'じょ','ja':'じゃ','ju':'じゅ','jo':'じょ',
+            'bya':'びゃ','byu':'びゅ','byo':'びょ',
+            'pya':'ぴゃ','pyu':'ぴゅ','pyo':'ぴょ',
+            'ka':'か','ki':'き','ku':'く','ke':'け','ko':'こ',
+            'sa':'さ','shi':'し','su':'す','se':'せ','so':'そ','si':'し',
+            'ta':'た','chi':'ち','tsu':'つ','te':'て','to':'と','ti':'ち','tu':'つ',
+            'na':'な','ni':'に','nu':'ぬ','ne':'ね','no':'の',
+            'ha':'は','hi':'ひ','fu':'ふ','he':'へ','ho':'ほ','hu':'ふ',
+            'ma':'ま','mi':'み','mu':'む','me':'め','mo':'も',
+            'ya':'や','yu':'ゆ','yo':'よ',
+            'ra':'ら','ri':'り','ru':'る','re':'れ','ro':'ろ',
+            'wa':'わ','wo':'を','nn':'ん','n':'ん',
+            'ga':'が','gi':'ぎ','gu':'ぐ','ge':'げ','go':'ご',
+            'za':'ざ','ji':'じ','zu':'ず','ze':'ぜ','zo':'ぞ','zi':'じ',
+            'da':'だ','di':'ぢ','du':'づ','de':'で','do':'ど',
+            'ba':'ば','bi':'び','bu':'ぶ','be':'べ','bo':'ぼ',
+            'pa':'ぱ','pi':'ぴ','pu':'ぷ','pe':'ぺ','po':'ぽ',
+            'a':'あ','i':'い','u':'う','e':'え','o':'お'
+        };
+
+        function kataToHira(str) {
+            return str.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
+        }
+
+        function convertToHiragana(text) {
+            let str = text;
+            Object.keys(kanjiDict).forEach(k => {
+                str = str.replace(new RegExp(k, 'g'), kanjiDict[k]);
+            });
+            str = kataToHira(str);
+
+            let result = '';
+            let i = 0;
+            let lower = str.toLowerCase();
+            while (i < lower.length) {
+                let matched = false;
+                for (let len = 4; len >= 1; len--) {
+                    if (i + len <= lower.length) {
+                        let sub = lower.substring(i, i + len);
+                        if (romajiMap[sub]) {
+                            result += romajiMap[sub];
+                            i += len;
+                            matched = true;
+                            break;
+                        }
+                    }
+                }
+                if (!matched) {
+                    result += str[i];
+                    i++;
+                }
+            }
+            return result;
+        }
+
+        const vowelMap = {
+            'あ':'あ','か':'あ','さ':'あ','た':'あ','な':'あ','は':'あ','ま':'あ','や':'あ','ら':'あ','わ':'あ','が':'あ','ざ':'あ','だ':'あ','ば':'あ','ぱ':'あ','きゃ':'あ','しゃ':'あ','ちゃ':'あ','にゃ':'あ','ひゃ':'あ','みゃ':'あ','りゃ':'あ','ぎゃ':'あ','じゃ':'あ','びゃ':'あ','ぴゃ':'あ',
+            'い':'い','き':'い','し':'い','ち':'い','に':'い','ひ':'い','み':'い','り':'い','ぎ':'い','じ':'い','ぢ':'い','び':'い','ぴ':'い',
+            'う':'う','く':'う','す':'う','つ':'う','ぬ':'う','ふ':'う','む':'う','ゆ':'う','る':'う','ぐ':'う','ず':'う','づ':'う','ぶ':'う','ぷ':'う','きゅ':'う','しゅ':'う','ちゅ':'う','にゅ':'う','ひゅ':'う','みゅ':'う','りゅ':'う','ぎゅ':'う','じゅ':'う','びゅ':'う','ぴゅ':'う',
+            'え':'え','け':'え','せ':'え','て':'え','ね':'え','へ':'え','め':'え','れ':'え','げ':'え','ぜ':'え','で':'え','べ':'え','ぺ':'え',
+            'お':'お','こ':'お','そ':'お','と':'お','の':'お','ほ':'お','も':'お','よ':'お','ろ':'お','を':'お','ご':'お','ぞ':'お','ど':'お','ぼ':'お','ぽ':'お','きょ':'お','しょ':'お','ちょ':'お','にょ':'お','ひょ':'お','みょ':'お','りょ':'お','ぎょ':'お','じょ':'お','びょ':'お','ぴょ':'お'
+        };
+
+        const defaultParams = { speed: 0.30, pitch: 0, smooth: 40, tone: 0, volume: 1.0 };
+
+        let sentences = [
+            { text: "こんにちわ", params: { ...defaultParams }, pitchOffsets: [], durSeconds: [] }
+        ];
+        let activeIndex = 0;
+        let paramApplyMode = 'single';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderSentences();
+            initCanvas();
+            window.addEventListener('resize', updateIntonationGraph);
+        });
+
+        function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
+        function changeColor(color) { document.documentElement.setAttribute('data-color', color); }
+
+        function initAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        /* 誤字修正：あたらしいぶんしょうです */
+        function addSentence(textVal = "あたらしいぶんしょうです") {
+            if (sentences.length >= 10) return alert("文章は最大10文までです。");
+            sentences.push({ text: textVal, params: { ...sentences[activeIndex].params }, pitchOffsets: [], durSeconds: [] });
+            activeIndex = sentences.length - 1;
+            renderSentences();
+        }
+
+        function removeSentence(idx, e) {
+            e.stopPropagation();
+            if (sentences.length <= 1) return alert("最低1つの文章が必要です。");
+            sentences.splice(idx, 1);
+            if (activeIndex >= sentences.length) activeIndex = sentences.length - 1;
+            renderSentences();
+        }
+
+        function selectSentence(idx) {
+            if (activeIndex === idx) return;
+            activeIndex = idx;
+            renderSentences();
+        }
+
+        function renderSentences() {
+            const container = document.getElementById('sentences-container');
+            container.innerHTML = '';
+
+            sentences.forEach((s, idx) => {
+                const row = document.createElement('div');
+                row.className = `sentence-row ${idx === activeIndex ? 'active' : ''}`;
+                row.onclick = () => selectSentence(idx);
+
+                row.innerHTML = `
+                    <div class="num">${idx + 1}</div>
+                    <input type="text" value="${s.text}" oninput="onInputTextChange(${idx}, this)">
+                    <button class="btn btn-secondary btn-sm btn-danger" onclick="removeSentence(${idx}, event)">×</button>
+                `;
+                container.appendChild(row);
+            });
+
+            syncParamsToUI();
+            updateIntonationGraph();
+            renderDurationsEditor();
+        }
+
+        function onInputTextChange(idx, inputElem) {
+            const cursorPosition = inputElem.selectionStart;
+            let val = inputElem.value;
+            let autoConverted = convertToHiragana(val);
+
+            sentences[idx].text = autoConverted;
+
+            if (val !== autoConverted) {
+                inputElem.value = autoConverted;
+                inputElem.setSelectionRange(cursorPosition, cursorPosition);
+            }
+
+            updateIntonationGraph();
+            renderDurationsEditor();
+        }
+
+        function toggleParamMode() {
+            const radios = document.getElementsByName('param-mode');
+            radios.forEach(r => { if (r.checked) paramApplyMode = r.value; });
+        }
+
+        function updateParam(key, val) {
+            const numVal = parseFloat(val);
+            if (paramApplyMode === 'all') {
+                sentences.forEach(s => s.params[key] = numVal);
+            } else {
+                sentences[activeIndex].params[key] = numVal;
+            }
+            syncParamsToUI();
+            renderDurationsEditor();
+        }
+
+        function resetParam(key) {
+            const def = defaultParams[key];
+            updateParam(key, def);
+            document.getElementById(`param-${key}`).value = def;
+        }
+
+        function syncParamsToUI() {
+            const p = sentences[activeIndex].params;
+            document.getElementById('param-speed').value = p.speed;
+            document.getElementById('val-speed').textContent = p.speed.toFixed(2) + 's';
+            document.getElementById('param-pitch').value = p.pitch;
+            document.getElementById('val-pitch').textContent = p.pitch;
+            document.getElementById('param-smooth').value = p.smooth;
+            document.getElementById('val-smooth').textContent = p.smooth + '%';
+            document.getElementById('param-tone').value = p.tone;
+            document.getElementById('val-tone').textContent = p.tone;
+            document.getElementById('param-volume').value = p.volume;
+            document.getElementById('val-volume').textContent = p.volume.toFixed(2);
+        }
+
+        function handleFileSelect(e) { 
+            if (e.target.files.length) handleZipFile(e.target.files[0]); 
+        }
+
+        async function handleZipFile(file) {
+            if (!file.name.endsWith('.zip')) {
+                alert('Zip形式のファイル (.zip) のみ読み込み可能です。');
+                return;
+            }
+
+            initAudioContext();
+            document.getElementById('status-text').textContent = "Zip解析中...";
+            voiceLibrary = { name: file.name.replace('.zip', ''), samples: {}, iconUrl: null };
+
+            try {
+                const zip = await JSZip.loadAsync(file);
+                let audioEntries = {};
+                let otoIniTexts = [];
+
+                const decodeText = (arr) => {
+                    try { return new TextDecoder('shift_jis').decode(arr); }
+                    catch(e) { return new TextDecoder('utf-8').decode(arr); }
+                };
+
+                for (let path in zip.files) {
+                    const entry = zip.files[path];
+                    if (entry.dir) continue;
+                    const fileName = path.split('/').pop();
+
+                    if (fileName.match(/ico|icon/i) && fileName.match(/\.(bmp|png|jpg|jpeg)$/i)) {
+                        const blob = await entry.async('blob');
+                        setVoiceIcon(URL.createObjectURL(blob));
+                    }
+
+                    if (fileName.toLowerCase() === 'oto.ini') {
+                        const bytes = await entry.async('uint8array');
+                        otoIniTexts.push(decodeText(bytes));
+                    } else if (fileName.toLowerCase().endsWith('.wav')) {
+                        const blob = await entry.async('blob');
+                        const buffer = await blob.arrayBuffer();
+                        try {
+                            const audioBuf = await audioCtx.decodeAudioData(buffer);
+                            audioEntries[path] = audioBuf;
+                            audioEntries[fileName] = audioBuf;
+                            registerSample(fileName.replace(/\.wav$/i, ''), { buffer: audioBuf, offset: 0, cutoff: 0 });
+                        } catch(err){}
+                    }
+                }
+
+                otoIniTexts.forEach(txt => parseOtoIni(txt, audioEntries));
+
+                document.getElementById('info-name').textContent = voiceLibrary.name;
+                document.getElementById('info-count').textContent = Object.keys(voiceLibrary.samples).length;
+                document.getElementById('status-text').textContent = "Zip音源 読み込み完了";
+                renderPhonemeGrid();
+            } catch (err) {
+                alert('Zipファイルの解析に失敗しました。');
+                document.getElementById('status-text').textContent = "エラー";
+            }
+        }
+
+        async function handleTxtSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const text = await file.text();
+            const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+            
+            if (lines.length > 0) {
+                sentences = [];
+                lines.slice(0, 10).forEach(line => {
+                    sentences.push({ text: convertToHiragana(line), params: { ...defaultParams }, pitchOffsets: [], durSeconds: [] });
+                });
+                activeIndex = 0;
+                renderSentences();
+                document.getElementById('status-text').textContent = "テキスト読み込み完了";
+            }
+            e.target.value = '';
+        }
+
+        function setVoiceIcon(url) {
+            voiceLibrary.iconUrl = url;
+            const container = document.getElementById('voice-icon');
+            container.innerHTML = `<img src="${url}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;">`;
+        }
+
+        function parseOtoIni(iniText, audioMap) {
+            iniText.split(/\r?\n/).forEach(line => {
+                if (!line || line.startsWith(';')) return;
+                const parts = line.split('=');
+                if (parts.length < 2) return;
+                const wavFile = parts[0].trim();
+                const p = parts[1].trim().split(',');
+                const alias = (p[0] && p[0].trim() !== '') ? p[0].trim() : wavFile.replace(/\.wav$/i, '');
+                const offset = (parseFloat(p[1]) || 0) / 1000;
+                const cutoff = (parseFloat(p[3]) || 0) / 1000;
+
+                const audioBuf = audioMap[wavFile] || audioMap[wavFile.split('/').pop()];
+                if (audioBuf) registerSample(alias, { buffer: audioBuf, offset, cutoff });
+            });
+        }
+
+        function registerSample(alias, obj) {
+            voiceLibrary.samples[alias] = obj;
+            const kanaMatch = alias.match(/[\u3040-\u309F\u30A0-\u30FF]+/);
+            if (kanaMatch) {
+                const kana = kataToHira(kanaMatch[0]);
+                if (!voiceLibrary.samples[kana]) voiceLibrary.samples[kana] = obj;
+            }
+        }
+
+        function renderPhonemeGrid() {
+            const grid = document.getElementById('phoneme-grid');
+            grid.innerHTML = '';
+            const keys = Object.keys(voiceLibrary.samples);
+            keys.forEach(k => {
+                const tag = document.createElement('div');
+                tag.className = 'phoneme-tag has-oto';
+                tag.textContent = k;
+                grid.appendChild(tag);
+            });
+        }
+
+        function parseTextToPhonemes(text) {
+            let input = convertToHiragana(text);
+            let result = [];
+            let i = 0;
+            let lastKana = '';
+
+            while (i < input.length) {
+                let c = input[i];
+                if ([" ", " ", "、", "。", "!", "！", "?", "？", "\n"].includes(c)) {
+                    result.push({ type: 'pause', char: c });
+                } else if (c === 'ー') {
+                    const extVowel = vowelMap[lastKana] || 'あ';
+                    result.push({ type: 'extend', char: extVowel });
+                } else if (c === 'っ') {
+                    result.push({ type: 'sokuon', char: 'っ' });
+                } else {
+                    result.push({ type: 'char', char: c });
+                    lastKana = c;
+                }
+                i++;
+            }
+            return result;
+        }
+
+        function getSampleForChar(char) {
+            if (voiceLibrary.samples[char]) return voiceLibrary.samples[char];
+            const prefixes = ['_', '- ', 'a ', 'i ', 'u ', 'e ', 'o ', 'n '];
+            for (let p of prefixes) {
+                if (voiceLibrary.samples[p + char]) return voiceLibrary.samples[p + char];
+            }
+            return null;
+        }
+
+        let canvas, ctx;
+        let isDragging = false, lastMousePos = null;
+
+        function initCanvas() {
+            canvas = document.getElementById('pitch-canvas');
+            ctx = canvas.getContext('2d');
+
+            canvas.addEventListener('mousedown', onCanvasMouseDown);
+            canvas.addEventListener('mousemove', onCanvasMouseMove);
+            window.addEventListener('mouseup', () => { isDragging = false; lastMousePos = null; });
+        }
+
+        function renderDurationsEditor() {
+            const container = document.getElementById('durations-editor');
+            container.innerHTML = '';
+
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            let durs = sentences[activeIndex].durSeconds;
+            const defaultSpeed = sentences[activeIndex].params.speed;
+
+            if (durs.length !== phonemes.length) {
+                sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
+                durs = sentences[activeIndex].durSeconds;
+            }
+
+            phonemes.forEach((p, i) => {
+                const item = document.createElement('div');
+                item.className = 'duration-item';
+                item.innerHTML = `
+                    <label>${p.char}</label>
+                    <input type="number" step="0.01" min="0.05" max="2.00" value="${durs[i].toFixed(2)}" oninput="updateDurationValue(${i}, this.value)">
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function updateDurationValue(idx, val) {
+            const num = parseFloat(val) || 0.1;
+            sentences[activeIndex].durSeconds[idx] = Math.max(0.05, Math.min(2.0, num));
+        }
+
+        function updateIntonationGraph() {
+            if (!canvas) return;
+            const container = canvas.parentElement;
+
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            let offsets = sentences[activeIndex].pitchOffsets;
+
+            if (offsets.length !== phonemes.length) {
+                sentences[activeIndex].pitchOffsets = new Array(phonemes.length).fill(0);
+                offsets = sentences[activeIndex].pitchOffsets;
+            }
+
+            /* 1音素あたりの最小幅を60pxに設定し、長文になっても圧縮されないようキャンバス幅を確保 */
+            const minColWidth = 60;
+            const calculatedWidth = phonemes.length * minColWidth;
+            canvas.width = Math.max(container.clientWidth, calculatedWidth);
+            canvas.height = container.clientHeight;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (phonemes.length === 0) return;
+
+            const colWidth = canvas.width / phonemes.length;
+            const points = [];
+            
+            /* ピッチ高低差の感度を緩和 (最大±12ステップで高さをフル活用) */
+            const maxPitchStep = 12;
+            const pixelPerStep = (canvas.height / 2 - 25) / maxPitchStep;
+
+            phonemes.forEach((p, i) => {
+                const centerX = colWidth * i + colWidth / 2;
+                const centerY = canvas.height / 2 - (offsets[i] * pixelPerStep);
+                points.push({ x: centerX, y: centerY, startX: colWidth * i, width: colWidth, char: p.char, idx: i });
+            });
+
+            /* 基準値のセンターライン */
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.beginPath(); ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2); ctx.stroke();
+
+            /* 音素区切りガイド線 */
+            points.forEach(pt => {
+                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                ctx.beginPath(); ctx.moveTo(pt.startX + pt.width, 0); ctx.lineTo(pt.startX + pt.width, canvas.height); ctx.stroke();
+            });
+
+            /* なめらかなピッチ曲線 */
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            points.forEach((pt, i) => {
+                if (i === 0) ctx.moveTo(pt.x, pt.y);
+                else {
+                    const prev = points[i - 1];
+                    const cx = (prev.x + pt.x) / 2;
+                    ctx.bezierCurveTo(cx, prev.y, cx, pt.y, pt.x, pt.y);
+                }
+            });
+            ctx.stroke();
+
+            /* ノードポイントとテキストラベル描画 */
+            points.forEach(pt => {
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim();
+                ctx.font = '12px sans-serif';
+                ctx.fillText(pt.char, pt.x - 4, canvas.height - 10);
+            });
+        }
+
+        function onCanvasMouseDown(e) {
+            isDragging = true;
+            const rect = canvas.getBoundingClientRect();
+            lastMousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            handleCanvasInteraction(lastMousePos.x, lastMousePos.y);
+        }
+
+        function onCanvasMouseMove(e) {
+            if (!isDragging) return;
+            const rect = canvas.getBoundingClientRect();
+            const currentPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+            if (lastMousePos) {
+                const dist = Math.hypot(currentPos.x - lastMousePos.x, currentPos.y - lastMousePos.y);
+                const steps = Math.max(1, Math.floor(dist / 3));
+                for (let i = 1; i <= steps; i++) {
+                    const interpX = lastMousePos.x + (currentPos.x - lastMousePos.x) * (i / steps);
+                    const interpY = lastMousePos.y + (currentPos.y - lastMousePos.y) * (i / steps);
+                    handleCanvasInteraction(interpX, interpY);
+                }
+            } else {
+                handleCanvasInteraction(currentPos.x, currentPos.y);
+            }
+            lastMousePos = currentPos;
+        }
+
+        function handleCanvasInteraction(x, y) {
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            if (!phonemes.length) return;
+
+            const colWidth = canvas.width / phonemes.length;
+            const targetIdx = Math.max(0, Math.min(phonemes.length - 1, Math.floor(x / colWidth)));
+
+            const centerY = canvas.height / 2;
+            const maxPitchStep = 12;
+            const pixelPerStep = (canvas.height / 2 - 25) / maxPitchStep;
+            
+            /* ピッチ変化量を±12の範囲にマイルド化 */
+            const pitchOffset = Math.round((centerY - y) / pixelPerStep);
+            sentences[activeIndex].pitchOffsets[targetIdx] = Math.max(-12, Math.min(12, pitchOffset));
+
+            updateIntonationGraph();
+        }
+
+        function resetIntonation() {
+            sentences[activeIndex].pitchOffsets = [];
+            const defaultSpeed = sentences[activeIndex].params.speed;
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
+
+            updateIntonationGraph();
+            renderDurationsEditor();
+        }
+
+        function applyPreset(type) {
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const len = phonemes.length;
+            if (!len) return;
+
+            sentences[activeIndex].pitchOffsets = new Array(len).fill(0);
+
+            if (type === 'question') {
+                sentences[activeIndex].pitchOffsets[len - 1] = 4;
+                if (len > 1) sentences[activeIndex].pitchOffsets[len - 2] = 1;
+            } else if (type === 'exclaim') {
+                sentences[activeIndex].pitchOffsets[0] = 3;
+                sentences[activeIndex].pitchOffsets[len - 1] = -2;
+            }
+            updateIntonationGraph();
+        }
+
+        function schedulePhoneme(ctx, dest, sample, startTime, duration, opts, pitchOffset = 0, isLastPhoneme = false) {
+            if (!sample || !sample.buffer) return;
+
+            const src = ctx.createBufferSource();
+            src.buffer = sample.buffer;
+
+            /* ピッチ変化が激しくなりすぎないようスケール補正 */
+            const totalPitch = opts.pitch + (pitchOffset * 0.5);
+            const rate = Math.pow(2, totalPitch / 12);
+            src.playbackRate.setValueAtTime(rate, startTime);
+
+            const startOffset = sample.offset || 0;
+            let playLen = duration;
+            if (sample.cutoff > 0) {
+                playLen = Math.min(duration, sample.buffer.duration - startOffset - sample.cutoff);
+            }
+
+            let lastNode = src;
+            if (opts.tone !== 0) {
+                const filter = ctx.createBiquadFilter();
+                if (opts.tone > 0) {
+                    filter.type = "peaking"; filter.frequency.value = 3000; filter.gain.value = opts.tone * 1.5;
+                } else {
+                    filter.type = "lowpass"; filter.frequency.value = Math.max(400, 3500 + opts.tone * 280);
+                }
+                src.connect(filter);
+                lastNode = filter;
+            }
+
+            const gain = ctx.createGain();
+            const fadeTime = Math.min(0.04 * (opts.smooth / 100), playLen * 0.2);
+            const releaseTime = isLastPhoneme ? Math.max(fadeTime, 0.08) : fadeTime;
+
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(opts.volume, startTime + fadeTime);
+            gain.gain.setValueAtTime(opts.volume, startTime + Math.max(fadeTime, playLen - releaseTime));
+            gain.gain.linearRampToValueAtTime(0, startTime + playLen + (isLastPhoneme ? 0.05 : 0));
+
+            lastNode.connect(gain);
+            gain.connect(dest);
+
+            src.start(startTime, startOffset, Math.max(0.05, playLen + releaseTime));
+        }
+
+        async function speakAll() {
+            initAudioContext();
+            let currentTime = audioCtx.currentTime + 0.05;
+
+            const targetSentences = (paramApplyMode === 'all') ? sentences : [sentences[activeIndex]];
+
+            targetSentences.forEach(s => {
+                const phonemes = parseTextToPhonemes(s.text);
+                const opts = s.params;
+                let charIdx = 0;
+
+                const soundPhonemesCount = phonemes.filter(p => p.type === 'char' || p.type === 'extend').length;
+
+                phonemes.forEach(p => {
+                    if (p.type === 'char' || p.type === 'extend') {
+                        const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
+                        const overlap = (charDuration * 0.3) * (opts.smooth / 100);
+                        const sample = getSampleForChar(p.char);
+                        const pOffset = s.pitchOffsets[charIdx] || 0;
+                        const isLast = (charIdx === soundPhonemesCount - 1);
+                        
+                        if (sample) schedulePhoneme(audioCtx, audioCtx.destination, sample, currentTime, charDuration, opts, pOffset, isLast);
+                        currentTime += Math.max(0.02, charDuration - (isLast ? 0 : overlap));
+                        charIdx++;
+                    } else if (p.type === 'pause') {
+                        currentTime += opts.speed * 1.2;
+                    } else if (p.type === 'sokuon') {
+                        currentTime += opts.speed * 0.6;
+                    }
+                });
+                currentTime += 0.4;
+            });
+        }
+
+        async function exportWav() {
+            initAudioContext();
+            const targetSentences = (paramApplyMode === 'all') ? sentences : [sentences[activeIndex]];
+            const sampleRate = 44100;
+
+            let totalDur = 0.5;
+            targetSentences.forEach(s => {
+                const phonemes = parseTextToPhonemes(s.text);
+                const opts = s.params;
+                let cIdx = 0;
+                phonemes.forEach(p => {
+                    if (p.type === 'char' || p.type === 'extend') {
+                        const d = (s.durSeconds && s.durSeconds[cIdx]) ? s.durSeconds[cIdx] : opts.speed;
+                        totalDur += d;
+                        cIdx++;
+                    } else if (p.type === 'pause') totalDur += opts.speed * 1.2;
+                    else totalDur += opts.speed * 0.6;
+                });
+                totalDur += 0.4;
+            });
+
+            const offlineCtx = new OfflineAudioContext(1, Math.ceil(sampleRate * totalDur), sampleRate);
+            let currentTime = 0.05;
+
+            targetSentences.forEach(s => {
+                const phonemes = parseTextToPhonemes(s.text);
+                const opts = s.params;
+                let charIdx = 0;
+                const soundPhonemesCount = phonemes.filter(p => p.type === 'char' || p.type === 'extend').length;
+
+                phonemes.forEach(p => {
+                    if (p.type === 'char' || p.type === 'extend') {
+                        const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
+                        const overlap = (charDuration * 0.3) * (opts.smooth / 100);
+                        const sample = getSampleForChar(p.char);
+                        const pOffset = s.pitchOffsets[charIdx] || 0;
+                        const isLast = (charIdx === soundPhonemesCount - 1);
+
+                        if (sample) schedulePhoneme(offlineCtx, offlineCtx.destination, sample, currentTime, charDuration, opts, pOffset, isLast);
+                        currentTime += Math.max(0.02, charDuration - (isLast ? 0 : overlap));
+                        charIdx++;
+                    } else if (p.type === 'pause') {
+                        currentTime += opts.speed * 1.2;
+                    } else if (p.type === 'sokuon') {
+                        currentTime += opts.speed * 0.6;
+                    }
+                });
+                currentTime += 0.4;
+            });
+
+            const rendered = await offlineCtx.startRendering();
+            const wavBlob = bufferToWavBlob(rendered);
+
+            const url = URL.createObjectURL(wavBlob);
+            const a = document.createElement('a'); a.href = url; a.download = `Yuyu_HANASU_${Date.now()}.wav`; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+        }
+
+        function bufferToWavBlob(buffer) {
+            const numChannels = 1, sampleRate = buffer.sampleRate, format = 1, bitDepth = 16;
+            const samples = buffer.getChannelData(0);
+            const dataByteCount = samples.length * 2;
+            const arrayBuffer = new ArrayBuffer(44 + dataByteCount);
+            const view = new DataView(arrayBuffer);
+            const writeString = (o, str) => { for (let i = 0; i < str.length; i++) view.setUint8(o + i, str.charCodeAt(i)); };
+
+            writeString(0, 'RIFF'); view.setUint32(4, 36 + dataByteCount, true);
+            writeString(8, 'WAVE'); writeString(12, 'fmt ');
+            view.setUint32(16, 16, true); view.setUint16(20, format, true);
+            view.setUint16(22, numChannels, true); view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true);
+            view.setUint16(34, bitDepth, true); writeString(36, 'data');
+            view.setUint32(40, dataByteCount, true);
+
+            let offset = 44;
+            for (let i = 0; i < samples.length; i++) {
+                const s = Math.max(-1, Math.min(1, samples[i]));
+                view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+                offset += 2;
+            }
+            return new Blob([arrayBuffer], { type: 'audio/wav' });
+        }
+    </script>
+</body>
+</html>
