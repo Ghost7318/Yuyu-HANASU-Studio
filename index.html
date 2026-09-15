@@ -2,7 +2,7 @@
 <html lang="ja" data-theme="dark" data-color="purple">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yuyu HANASU Studio 🎙️</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -36,7 +36,7 @@
         [data-color="yellow"] { --primary: #fbc531; --primary-hover: #e1b12c; }
         [data-color="red"]    { --primary: #e84118; --primary-hover: #c23616; }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0; background: var(--bg-base); color: var(--text-main);
             height: 100vh; display: flex; flex-direction: column; overflow: hidden;
@@ -44,24 +44,35 @@
         }
 
         header {
-            height: 54px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0;
+            height: 50px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 12px; flex-shrink: 0; z-index: 10;
         }
-        header h1 { font-size: 1.15em; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--primary); }
-        .header-actions { display: flex; gap: 12px; align-items: center; }
+        header h1 { font-size: 1.0em; font-weight: bold; margin: 0; display: flex; align-items: center; gap: 6px; color: var(--primary); }
+        .header-actions { display: flex; gap: 6px; align-items: center; }
 
         .app-container {
-            flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden;
+            flex: 1; display: grid; grid-template-columns: 320px 1fr; overflow: hidden; position: relative;
         }
+
+        .mobile-tabs {
+            display: none; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+            grid-template-columns: 1fr 1fr; height: 44px; flex-shrink: 0;
+        }
+        .tab-btn {
+            background: none; border: none; color: var(--text-sub); font-weight: bold; font-size: 0.9em;
+            display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(140, 122, 230, 0.08); }
 
         .sidebar {
             background: var(--bg-panel); border-right: 1px solid var(--border-color);
-            display: flex; flex-direction: column; padding: 12px; gap: 12px; overflow-y: auto;
+            display: flex; flex-direction: column; padding: 12px; gap: 10px; overflow-y: auto;
         }
 
         .file-select-btn {
             border: 2px dashed var(--primary); background: rgba(140, 122, 230, 0.08);
-            border-radius: var(--radius-main); padding: 14px; text-align: center;
+            border-radius: var(--radius-main); padding: 14px 10px; text-align: center;
             cursor: pointer; transition: 0.2s; color: var(--text-main); font-weight: bold;
         }
         .file-select-btn:hover { background: rgba(140, 122, 230, 0.18); border-color: var(--accent); }
@@ -69,101 +80,114 @@
 
         .voice-card {
             background: var(--bg-card); padding: 10px; border-radius: 8px; font-size: 0.8em; border: 1px solid var(--border-color);
-            display: flex; gap: 12px; align-items: center;
+            display: flex; gap: 10px; align-items: center;
         }
         .voice-icon {
-            width: 46px; height: 46px; border-radius: 6px; background: var(--bg-base);
-            object-fit: cover; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.4em;
+            width: 44px; height: 44px; border-radius: 6px; background: var(--bg-base);
+            object-fit: cover; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.3em; flex-shrink: 0;
         }
         .voice-details { flex: 1; overflow: hidden; }
         .voice-details div { margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .voice-details span { color: var(--primary); font-weight: bold; }
 
+        .style-selector-card {
+            background: var(--bg-card); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);
+            display: flex; flex-direction: column; gap: 6px; font-size: 0.8em;
+        }
+        .style-selector-card label { font-weight: bold; color: var(--text-sub); display: flex; justify-content: space-between; }
+        .style-selector-card select { width: 100%; padding: 6px; font-weight: bold; background: var(--bg-base); color: var(--primary); border: 1px solid var(--border-color); border-radius: 6px; }
+
         .phoneme-section {
-            flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 0;
+            flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 120px;
         }
         .phoneme-grid {
-            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 4px;
+            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px;
             overflow-y: auto; background: var(--bg-base); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);
+            max-height: 200px;
         }
         .phoneme-tag {
-            background: var(--bg-card); font-size: 0.8em; padding: 6px 2px; border-radius: 4px; text-align: center;
+            background: var(--bg-card); font-size: 0.8em; padding: 6px 4px; border-radius: 6px; text-align: center;
             border: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             font-weight: bold; color: var(--text-main);
         }
         .phoneme-tag.has-oto { border-color: var(--primary); color: var(--primary); background: rgba(140, 122, 230, 0.15); }
 
         .main-content {
-            display: flex; flex-direction: column; padding: 14px; gap: 10px; background: var(--bg-base); overflow-y: auto;
+            display: flex; flex-direction: column; padding: 12px; gap: 10px; background: var(--bg-base); overflow-y: auto;
         }
 
         .sentences-header { display: flex; justify-content: space-between; align-items: center; }
         .sentences-container {
-            display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; padding-right: 4px;
+            display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 2px;
         }
         .sentence-row {
             display: flex; gap: 8px; align-items: center; background: var(--bg-panel); padding: 6px 10px;
             border-radius: 8px; border: 2px solid transparent; transition: 0.2s;
         }
         .sentence-row.active { border-color: var(--primary); }
-        .sentence-row .num { font-size: 0.8em; font-weight: bold; width: 20px; color: var(--text-sub); text-align: center; }
+        .sentence-row .num { font-size: 0.85em; font-weight: bold; width: 22px; color: var(--text-sub); text-align: center; }
         .sentence-row input[type="text"] {
             flex: 1; background: var(--bg-base); border: 1px solid var(--border-color);
-            color: var(--text-main); border-radius: 6px; padding: 6px 10px; font-size: 0.9em; outline: none;
+            color: var(--text-main); border-radius: 6px; padding: 8px 10px; font-size: 0.9em; outline: none;
         }
         .sentence-row input[type="text"]:focus { border-color: var(--primary); }
 
         .intl-card {
-            background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px 12px;
+            background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px;
             border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;
         }
-        .intl-card-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: var(--text-sub); font-weight: bold; }
+        .intl-card-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: var(--text-sub); font-weight: bold; flex-wrap: wrap; gap: 6px; }
         .intl-tools { display: flex; gap: 6px; align-items: center; }
 
-        /* キャンバス容器に横スクロールを導入 */
         .canvas-wrapper { 
             position: relative; 
             width: 100%; 
-            height: 260px; 
+            height: 180px; 
             background: var(--bg-base); 
             border-radius: 8px; 
             border: 1px solid var(--border-color); 
             overflow-x: auto; 
             overflow-y: hidden; 
+            touch-action: none;
         }
         canvas { display: block; cursor: crosshair; height: 100%; }
 
         .durations-editor {
-            display: flex; gap: 6px; overflow-x: auto; padding: 6px 4px; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color);
+            display: flex; gap: 8px; overflow-x: auto; padding: 8px 6px; background: var(--bg-panel); border-radius: 8px; border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
         }
         .duration-item {
-            display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.75em; min-width: 48px;
+            display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.8em; min-width: 110px; flex-shrink: 0;
+            background: var(--bg-base); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color);
         }
         .duration-item label { color: var(--text-sub); font-weight: bold; }
         .duration-item input[type="number"] {
-            width: 100%; text-align: center; background: var(--bg-base); border: 1px solid var(--border-color);
-            color: var(--primary); border-radius: 4px; padding: 3px; font-weight: bold; font-size: 0.85em; outline: none;
+            width: 100%; text-align: center; background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--primary); border-radius: 6px; padding: 4px 2px; font-weight: bold; font-size: 0.85em; outline: none;
         }
-        .duration-item input[type="number"]:focus { border-color: var(--primary); }
+        .duration-item select {
+            width: 100%; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);
+            border-radius: 4px; font-size: 0.72em; padding: 2px; outline: none;
+        }
 
         .params-card {
-            background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px 12px;
+            background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px;
             border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;
         }
         .params-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;
         }
-        .param-group { display: flex; flex-direction: column; gap: 2px; font-size: 0.75em; }
+        .param-group { display: flex; flex-direction: column; gap: 4px; font-size: 0.8em; }
         .param-group label { display: flex; justify-content: space-between; font-weight: bold; color: var(--text-sub); }
         .param-group label span { color: var(--primary); }
-        input[type="range"] { accent-color: var(--primary); width: 100%; cursor: pointer; }
+        input[type="range"] { accent-color: var(--primary); width: 100%; cursor: pointer; height: 28px; }
 
-        .mode-toggle { display: flex; gap: 12px; align-items: center; font-size: 0.8em; color: var(--text-sub); }
+        .mode-toggle { display: flex; gap: 12px; align-items: center; font-size: 0.8em; color: var(--text-sub); flex-wrap: wrap; }
 
-        .controls-bar { display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: auto; padding-top: 4px; }
+        .controls-bar { display: flex; gap: 10px; justify-content: flex-end; align-items: center; margin-top: auto; padding-top: 6px; }
         .btn {
-            border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer;
-            display: inline-flex; align-items: center; gap: 6px; font-size: 0.85em; transition: 0.2s;
+            border: none; padding: 9px 16px; border-radius: 20px; font-weight: bold; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85em; transition: 0.2s; white-space: nowrap;
         }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
@@ -171,17 +195,49 @@
         .btn-accent:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .btn-sm { padding: 4px 8px; font-size: 0.75em; border-radius: 6px; }
+        .btn-sm { padding: 5px 10px; font-size: 0.75em; border-radius: 6px; }
         .btn-danger { background: var(--accent-pink); color: white; }
 
-        select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; outline: none; }
+        select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; outline: none; font-size: 0.85em; }
+
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal-card {
+            background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-main);
+            width: 320px; max-width: 90%; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+        }
+        .modal-card h3 { margin: 0; font-size: 1.0em; color: var(--primary); }
+        .modal-card label { font-size: 0.8em; color: var(--text-sub); font-weight: bold; }
+        .modal-card select { width: 100%; }
 
         footer {
-            height: 34px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: center; font-size: 0.75em; color: var(--text-sub); flex-shrink: 0; gap: 12px;
+            height: 32px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center; font-size: 0.75em; color: var(--text-sub); flex-shrink: 0; gap: 8px;
         }
         footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
-        footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            body { height: 100vh; height: -webkit-fill-available; }
+            .mobile-tabs { display: grid; }
+            .app-container { grid-template-columns: 1fr; }
+            .sidebar { display: none; height: 100%; padding: 10px; }
+            .sidebar.active { display: flex; }
+            .main-content { display: none; height: 100%; padding: 10px; }
+            .main-content.active { display: flex; }
+            
+            .canvas-wrapper { height: 160px; }
+            .params-grid { grid-template-columns: 1fr 1fr; gap: 12px 10px; }
+            .param-group label { font-size: 0.75em; }
+            
+            .controls-bar { width: 100%; gap: 8px; }
+            .controls-bar .btn { flex: 1; padding: 12px; font-size: 0.9em; }
+            
+            .btn-sm { padding: 6px 10px; font-size: 0.8em; }
+            .sentence-row { padding: 4px 6px; }
+            .sentence-row input[type="text"] { padding: 8px; }
+        }
     </style>
 </head>
 <body>
@@ -190,27 +246,32 @@
         <h1>🎙️ Yuyu HANASU Studio</h1>
         <div class="header-actions">
             <select id="theme-select" onchange="changeTheme(this.value)">
-                <option value="dark">🌙 ダーク</option>
-                <option value="light">☀️ ライト</option>
+                <option value="dark">🌙</option>
+                <option value="light">☀️</option>
             </select>
             <select id="color-select" onchange="changeColor(this.value)">
-                <option value="purple">🟣 パープル</option>
-                <option value="blue">🔵 ブルー</option>
-                <option value="green">🟢 グリーン</option>
-                <option value="yellow">🟡 イエロー</option>
-                <option value="red">🔴 レッド</option>
+                <option value="purple">🟣</option>
+                <option value="blue">🔵</option>
+                <option value="green">🟢</option>
+                <option value="yellow">🟡</option>
+                <option value="red">🔴</option>
             </select>
-            <span class="btn btn-secondary btn-sm" id="status-text">音源未読み込み</span>
+            <span class="btn btn-secondary btn-sm" id="status-text">未読み込み</span>
         </div>
     </header>
 
+    <div class="mobile-tabs">
+        <button class="tab-btn" id="tab-btn-side" onclick="switchMobileTab('side')">📁 音源・スタイル</button>
+        <button class="tab-btn active" id="tab-btn-main" onclick="switchMobileTab('main')">🎛️ エディタ・編集</button>
+    </div>
+
     <div class="app-container">
         <!-- サイドバー -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar-panel">
             <div class="file-select-btn" onclick="document.getElementById('file-input').click()">
-                <div style="font-size: 1.5em;">📦</div>
+                <div style="font-size: 1.4em;">📦</div>
                 <div style="font-size: 0.85em;">UTAU Zip音源を選択</div>
-                <p>クリックして .zip ファイルを選択</p>
+                <p>単音 / 連続音 / CVVC / 表情音源対応</p>
                 <input type="file" id="file-input" accept=".zip" style="display:none;" onchange="handleFileSelect(event)">
             </div>
 
@@ -218,24 +279,32 @@
                 <div class="voice-icon" id="voice-icon">🎙️</div>
                 <div class="voice-details">
                     <div>音源名: <span id="info-name">未読み込み</span></div>
-                    <div>音素数: <span id="info-count">0</span></div>
+                    <div>全音素数: <span id="info-count">0</span></div>
                 </div>
             </div>
 
+            <!-- 音源スタイル・一括切替ドロップダウン -->
+            <div class="style-selector-card">
+                <label>🎭 音源スタイル・方式一括切替</label>
+                <select id="style-select" onchange="onStyleChange(this.value)">
+                    <option value="auto">🤖 自動選択（推奨）</option>
+                </select>
+            </div>
+
             <div class="phoneme-section">
-                <div style="font-size: 0.8em; font-weight: bold; color: var(--text-sub);">対応音素エイリアス一覧:</div>
+                <div style="font-size: 0.75em; font-weight: bold; color: var(--text-sub);">登録音素・エイリアス一覧:</div>
                 <div class="phoneme-grid" id="phoneme-grid"></div>
             </div>
         </div>
 
         <!-- メインパネル -->
-        <div class="main-content">
+        <div class="main-content active" id="main-panel">
             <div class="sentences-header">
-                <span style="font-size: 0.85em; font-weight: bold; color: var(--text-sub);">📝 文章リスト (最大10文)</span>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('txt-input').click()">📄 テキスト読み込み (.txt)</button>
+                <span style="font-size: 0.8em; font-weight: bold; color: var(--text-sub);">📝 文章リスト (最大10文)</span>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('txt-input').click()">📄 読み込み</button>
                     <input type="file" id="txt-input" accept=".txt" style="display:none;" onchange="handleTxtSelect(event)">
-                    <button class="btn btn-secondary btn-sm" onclick="addSentence()">+ 文を追加</button>
+                    <button class="btn btn-secondary btn-sm" onclick="addSentence()">+ 追加</button>
                 </div>
             </div>
             
@@ -244,64 +313,78 @@
             <!-- イントネーション エディタ -->
             <div class="intl-card">
                 <div class="intl-card-header">
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <span>🎶 イントネーション / ピッチカーブ (ドラッグ・フリー描画対応)</span>
-                        <div class="intl-tools">
-                            <button class="btn btn-secondary btn-sm" onclick="applyPreset('question')">❓ 疑問形</button>
-                            <button class="btn btn-secondary btn-sm" onclick="applyPreset('exclaim')">❗ 強調</button>
-                        </div>
-                    </div>
+                    <span>🎶 イントネーション / ピッチ (なぞって調整)</span>
                     <div class="intl-tools">
+                        <button class="btn btn-secondary btn-sm" onclick="applyPreset('question')">❓ 疑問</button>
+                        <button class="btn btn-secondary btn-sm" onclick="applyPreset('exclaim')">❗ 強調</button>
                         <button class="btn btn-secondary btn-sm" onclick="resetIntonation()">リセット</button>
                     </div>
                 </div>
-                <div class="canvas-wrapper">
+                <div class="canvas-wrapper" id="canvas-wrapper">
                     <canvas id="pitch-canvas"></canvas>
                 </div>
             </div>
 
-            <!-- 音節長（長さ）の数値ダイレクト調整エリア -->
-            <div style="font-size: 0.8em; font-weight: bold; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
-                <span>⏳ 音節ごとの長さ数値指定 (秒)</span>
-                <span style="font-size: 0.75em; opacity: 0.8;">※標準速度 0.30s に対する指定値</span>
+            <!-- 音節長（長さ）＆個別エイリアス選択エリア -->
+            <div style="font-size: 0.75em; font-weight: bold; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
+                <span>⏳ 音素ごとの長さ＆エイリアス微調整</span>
+                <button class="btn btn-secondary btn-sm" onclick="openBatchAliasModal()">🔁 一括エイリアス変換</button>
             </div>
             <div class="durations-editor" id="durations-editor"></div>
 
             <!-- パラメータコントロール -->
             <div class="params-card">
                 <div class="mode-toggle">
-                    <span>調整対象:</span>
-                    <label><input type="radio" name="param-mode" value="single" checked onchange="toggleParamMode()"> 選択中のみ</label>
-                    <label><input type="radio" name="param-mode" value="all" onchange="toggleParamMode()"> 全文章一括</label>
-                    <span style="font-size: 0.75em; color: var(--text-sub); margin-left: auto;">※数値をダブルクリックで初期化</span>
+                    <span>対象:</span>
+                    <label><input type="radio" name="param-mode" value="single" checked onchange="toggleParamMode()"> 選択中</label>
+                    <label><input type="radio" name="param-mode" value="all" onchange="toggleParamMode()"> 全文章</label>
                 </div>
                 <div class="params-grid">
                     <div class="param-group">
-                        <label>話す速度 (Speed) <span id="val-speed" ondblclick="resetParam('speed')">0.30s</span></label>
-                        <input type="range" id="param-speed" min="0.10" max="0.60" step="0.01" value="0.30" oninput="updateParam('speed', this.value)">
+                        <label>話す速度 <span id="val-speed" ondblclick="resetParam('speed')">0.28s</span></label>
+                        <input type="range" id="param-speed" min="0.10" max="0.60" step="0.01" value="0.28" oninput="updateParam('speed', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>基本ピッチ (Pitch) <span id="val-pitch" ondblclick="resetParam('pitch')">0</span></label>
+                        <label>基本ピッチ <span id="val-pitch" ondblclick="resetParam('pitch')">0</span></label>
                         <input type="range" id="param-pitch" min="-12" max="12" step="1" value="0" oninput="updateParam('pitch', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>なめらかさ (Fade) <span id="val-smooth" ondblclick="resetParam('smooth')">40%</span></label>
+                        <label>なめらかさ <span id="val-smooth" ondblclick="resetParam('smooth')">40%</span></label>
                         <input type="range" id="param-smooth" min="0" max="100" step="5" value="40" oninput="updateParam('smooth', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>トーン (Tone) <span id="val-tone" ondblclick="resetParam('tone')">0</span></label>
+                        <label>トーン <span id="val-tone" ondblclick="resetParam('tone')">0</span></label>
                         <input type="range" id="param-tone" min="-10" max="10" step="1" value="0" oninput="updateParam('tone', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>音量 (Volume) <span id="val-volume" ondblclick="resetParam('volume')">1.0</span></label>
+                        <label>音量 <span id="val-volume" ondblclick="resetParam('volume')">1.0</span></label>
                         <input type="range" id="param-volume" min="0.1" max="1.5" step="0.05" value="1.0" oninput="updateParam('volume', this.value)">
                     </div>
                 </div>
             </div>
 
             <div class="controls-bar">
-                <button class="btn btn-primary" onclick="speakAll()">▶ 選択/一括 再生</button>
-                <button class="btn btn-accent" onclick="exportWav()">💾 WAV書き出し</button>
+                <button class="btn btn-primary" onclick="speakAll()">▶ 再生</button>
+                <button class="btn btn-accent" onclick="exportWav()">💾 WAV保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル: 同じひらがなを含むエイリアスをまとめて変更 -->
+    <div class="modal-overlay" id="batch-alias-modal">
+        <div class="modal-card">
+            <h3>🔁 一括エイリアス変更</h3>
+            <div>
+                <label>対象の音素（ひらがな）:</label>
+                <select id="modal-char-select" onchange="onModalCharChange(this.value)"></select>
+            </div>
+            <div>
+                <label>一括適用するエイリアス:</label>
+                <select id="modal-alias-select"></select>
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+                <button class="btn btn-secondary btn-sm" onclick="closeBatchAliasModal()">キャンセル</button>
+                <button class="btn btn-primary btn-sm" onclick="applyBatchAlias()">一括変更</button>
             </div>
         </div>
     </div>
@@ -313,7 +396,8 @@
     </footer>
 
     <script>
-        let voiceLibrary = { name: "未選択", samples: {}, iconUrl: null };
+        let voiceLibrary = { name: "未選択", samples: {}, iconUrl: null, styles: {} };
+        let currentSelectedStyle = "auto";
         let audioCtx = null;
 
         const kanjiDict = {
@@ -354,6 +438,59 @@
             'a':'あ','i':'い','u':'う','e':'え','o':'お'
         };
 
+        const vowelMap = {
+            'あ':'a','か':'a','さ':'a','た':'a','な':'a','は':'a','ま':'a','や':'a','ら':'a','わ':'a','が':'a','ざ':'a','だ':'a','ば':'a','ぱ':'a','きゃ':'a','しゃ':'a','ちゃ':'a','にゃ':'a','ひゃ':'a','みゃ':'a','りゃ':'a','ぎゃ':'a','じゃ':'a','びゃ':'a','ぴゃ':'a',
+            'い':'i','き':'i','し':'i','ち':'i','に':'i','ひ':'i','み':'i','り':'i','ぎ':'i','じ':'i','ぢ':'i','び':'i','ぴ':'i',
+            'う':'u','く':'u','す':'u','つ':'u','ぬ':'u','ふ':'u','む':'u','ゆ':'u','る':'u','ぐ':'u','ず':'u','づ':'u','ぶ':'u','ぷ':'u','きゅ':'u','しゅ':'u','ちゅ':'u','にゅ':'u','ひゅ':'u','みゅ':'u','りゅ':'u','ぎゅ':'u','じゅ':'u','びゅ':'u','ぴゅ':'u',
+            'え':'e','け':'e','せ':'e','て':'e','ね':'e','へ':'e','め':'e','れ':'e','げ':'e','ぜ':'e','で':'e','べ':'e','ぺ':'e',
+            'お':'o','こ':'o','そ':'o','と':'o','の':'o','ほ':'o','も':'o','よ':'o','ろ':'o','を':'o','ご':'o','ぞ':'o','ど':'o','ぼ':'o','ぽ':'o','きょ':'o','しょ':'o','ちょ':'o','にょ':'o','ひょ':'o','みょ':'o','りょ':'o','ぎょ':'o','じょ':'o','びょ':'o','ぴょ':'o',
+            'ん':'n'
+        };
+
+        const defaultParams = { speed: 0.28, pitch: 0, smooth: 40, tone: 0, volume: 1.0 };
+
+        let sentences = [
+            { text: "こんにちわ", params: { ...defaultParams }, pitchOffsets: [], durSeconds: [], selectedAliases: [] }
+        ];
+        let activeIndex = 0;
+        let paramApplyMode = 'single';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initCanvas();
+            renderSentences();
+            window.addEventListener('resize', () => {
+                updateIntonationGraph();
+            });
+        });
+
+        function switchMobileTab(tab) {
+            const sideBtn = document.getElementById('tab-btn-side');
+            const mainBtn = document.getElementById('tab-btn-main');
+            const sidePanel = document.getElementById('sidebar-panel');
+            const mainPanel = document.getElementById('main-panel');
+
+            if (tab === 'side') {
+                sideBtn.classList.add('active');
+                mainBtn.classList.remove('active');
+                sidePanel.classList.add('active');
+                mainPanel.classList.remove('active');
+            } else {
+                mainBtn.classList.add('active');
+                sideBtn.classList.remove('active');
+                mainPanel.classList.add('active');
+                sidePanel.classList.remove('active');
+                setTimeout(updateIntonationGraph, 100);
+            }
+        }
+
+        function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
+        function changeColor(color) { document.documentElement.setAttribute('data-color', color); }
+
+        function initAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
         function kataToHira(str) {
             return str.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
         }
@@ -389,40 +526,9 @@
             return result;
         }
 
-        const vowelMap = {
-            'あ':'あ','か':'あ','さ':'あ','た':'あ','な':'あ','は':'あ','ま':'あ','や':'あ','ら':'あ','わ':'あ','が':'あ','ざ':'あ','だ':'あ','ば':'あ','ぱ':'あ','きゃ':'あ','しゃ':'あ','ちゃ':'あ','にゃ':'あ','ひゃ':'あ','みゃ':'あ','りゃ':'あ','ぎゃ':'あ','じゃ':'あ','びゃ':'あ','ぴゃ':'あ',
-            'い':'い','き':'い','し':'い','ち':'い','に':'い','ひ':'い','み':'い','り':'い','ぎ':'い','じ':'い','ぢ':'い','び':'い','ぴ':'い',
-            'う':'う','く':'う','す':'う','つ':'う','ぬ':'う','ふ':'う','む':'う','ゆ':'う','る':'う','ぐ':'う','ず':'う','づ':'う','ぶ':'う','ぷ':'う','きゅ':'う','しゅ':'う','ちゅ':'う','にゅ':'う','ひゅ':'う','みゅ':'う','りゅ':'う','ぎゅ':'う','じゅ':'う','びゅ':'う','ぴゅ':'う',
-            'え':'え','け':'え','せ':'え','て':'え','ね':'え','へ':'え','め':'え','れ':'え','げ':'え','ぜ':'え','で':'え','べ':'え','ぺ':'え',
-            'お':'お','こ':'お','そ':'お','と':'お','の':'お','ほ':'お','も':'お','よ':'お','ろ':'お','を':'お','ご':'お','ぞ':'お','ど':'お','ぼ':'お','ぽ':'お','きょ':'お','しょ':'お','ちょ':'お','にょ':'お','ひょ':'お','みょ':'お','りょ':'お','ぎょ':'お','じょ':'お','びょ':'お','ぴょ':'お'
-        };
-
-        const defaultParams = { speed: 0.30, pitch: 0, smooth: 40, tone: 0, volume: 1.0 };
-
-        let sentences = [
-            { text: "こんにちわ", params: { ...defaultParams }, pitchOffsets: [], durSeconds: [] }
-        ];
-        let activeIndex = 0;
-        let paramApplyMode = 'single';
-
-        window.addEventListener('DOMContentLoaded', () => {
-            renderSentences();
-            initCanvas();
-            window.addEventListener('resize', updateIntonationGraph);
-        });
-
-        function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
-        function changeColor(color) { document.documentElement.setAttribute('data-color', color); }
-
-        function initAudioContext() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        /* 誤字修正：あたらしいぶんしょうです */
         function addSentence(textVal = "あたらしいぶんしょうです") {
             if (sentences.length >= 10) return alert("文章は最大10文までです。");
-            sentences.push({ text: textVal, params: { ...sentences[activeIndex].params }, pitchOffsets: [], durSeconds: [] });
+            sentences.push({ text: textVal, params: { ...sentences[activeIndex].params }, pitchOffsets: [], durSeconds: [], selectedAliases: [] });
             activeIndex = sentences.length - 1;
             renderSentences();
         }
@@ -475,6 +581,7 @@
                 inputElem.setSelectionRange(cursorPosition, cursorPosition);
             }
 
+            sentences[idx].selectedAliases = [];
             updateIntonationGraph();
             renderDurationsEditor();
         }
@@ -526,13 +633,13 @@
             }
 
             initAudioContext();
-            document.getElementById('status-text').textContent = "Zip解析中...";
-            voiceLibrary = { name: file.name.replace('.zip', ''), samples: {}, iconUrl: null };
+            document.getElementById('status-text').textContent = "解析中...";
+            voiceLibrary = { name: file.name.replace('.zip', ''), samples: {}, iconUrl: null, styles: {} };
 
             try {
                 const zip = await JSZip.loadAsync(file);
                 let audioEntries = {};
-                let otoIniTexts = [];
+                let otoIniEntries = [];
 
                 const decodeText = (arr) => {
                     try { return new TextDecoder('shift_jis').decode(arr); }
@@ -551,7 +658,7 @@
 
                     if (fileName.toLowerCase() === 'oto.ini') {
                         const bytes = await entry.async('uint8array');
-                        otoIniTexts.push(decodeText(bytes));
+                        otoIniEntries.push({ path, text: decodeText(bytes) });
                     } else if (fileName.toLowerCase().endsWith('.wav')) {
                         const blob = await entry.async('blob');
                         const buffer = await blob.arrayBuffer();
@@ -559,21 +666,58 @@
                             const audioBuf = await audioCtx.decodeAudioData(buffer);
                             audioEntries[path] = audioBuf;
                             audioEntries[fileName] = audioBuf;
-                            registerSample(fileName.replace(/\.wav$/i, ''), { buffer: audioBuf, offset: 0, cutoff: 0 });
                         } catch(err){}
                     }
                 }
 
-                otoIniTexts.forEach(txt => parseOtoIni(txt, audioEntries));
+                otoIniEntries.forEach(item => {
+                    const dirParts = item.path.split('/');
+                    dirParts.pop();
+                    let styleName = dirParts.length ? dirParts.join('/') : "通常音源";
+                    
+                    if (styleName.includes('強') || styleName.includes('Power')) styleName = "強音源 / Power";
+                    else if (styleName.includes('弱') || styleName.includes('囁') || styleName.includes('Whisper')) styleName = "弱・囁き音源 / Whisper";
+                    else if (styleName.includes('連続音')) styleName = "連続音";
+                    else if (styleName.includes('単独音')) styleName = "単独音";
+
+                    if (!voiceLibrary.styles[styleName]) voiceLibrary.styles[styleName] = [];
+                    parseOtoIni(item.text, audioEntries, styleName);
+                });
 
                 document.getElementById('info-name').textContent = voiceLibrary.name;
                 document.getElementById('info-count').textContent = Object.keys(voiceLibrary.samples).length;
-                document.getElementById('status-text').textContent = "Zip音源 読み込み完了";
+                document.getElementById('status-text').textContent = "読み込み完了";
+
+                updateStyleDropdown();
                 renderPhonemeGrid();
+                sentences.forEach(s => s.selectedAliases = []);
+                renderDurationsEditor();
             } catch (err) {
                 alert('Zipファイルの解析に失敗しました。');
                 document.getElementById('status-text').textContent = "エラー";
             }
+        }
+
+        function updateStyleDropdown() {
+            const select = document.getElementById('style-select');
+            select.innerHTML = '<option value="auto">🤖 自動判定 (一番自然な設定)</option>';
+            
+            const styleKeys = Object.keys(voiceLibrary.styles);
+            styleKeys.forEach(st => {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.textContent = `✨ ${st}`;
+                select.appendChild(opt);
+            });
+            
+            const optRen = document.createElement('option'); optRen.value = "mode_renketsu"; optRen.textContent = "⚙️ 連続音優先"; select.appendChild(optRen);
+            const optTando = document.createElement('option'); optTando.value = "mode_tandoku"; optTando.textContent = "⚙️ 単独音優先"; select.appendChild(optTando);
+        }
+
+        function onStyleChange(val) {
+            currentSelectedStyle = val;
+            sentences.forEach(s => s.selectedAliases = []);
+            renderDurationsEditor();
         }
 
         async function handleTxtSelect(e) {
@@ -586,11 +730,11 @@
             if (lines.length > 0) {
                 sentences = [];
                 lines.slice(0, 10).forEach(line => {
-                    sentences.push({ text: convertToHiragana(line), params: { ...defaultParams }, pitchOffsets: [], durSeconds: [] });
+                    sentences.push({ text: convertToHiragana(line), params: { ...defaultParams }, pitchOffsets: [], durSeconds: [], selectedAliases: [] });
                 });
                 activeIndex = 0;
                 renderSentences();
-                document.getElementById('status-text').textContent = "テキスト読み込み完了";
+                document.getElementById('status-text').textContent = "txt読み込み完了";
             }
             e.target.value = '';
         }
@@ -601,7 +745,23 @@
             container.innerHTML = `<img src="${url}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;">`;
         }
 
-        function parseOtoIni(iniText, audioMap) {
+        function renderPhonemeGrid() {
+            const grid = document.getElementById('phoneme-grid');
+            grid.innerHTML = '';
+            Object.keys(voiceLibrary.samples).forEach(key => {
+                const sample = voiceLibrary.samples[key];
+                const div = document.createElement('div');
+                div.className = 'phoneme-tag has-oto';
+                let label = key;
+                if (sample && sample.style && sample.style !== "通常音源") {
+                    label += ` [${sample.style}]`;
+                }
+                div.textContent = label;
+                grid.appendChild(div);
+            });
+        }
+
+        function parseOtoIni(iniText, audioMap, styleName) {
             iniText.split(/\r?\n/).forEach(line => {
                 if (!line || line.startsWith(';')) return;
                 const parts = line.split('=');
@@ -610,64 +770,128 @@
                 const p = parts[1].trim().split(',');
                 const alias = (p[0] && p[0].trim() !== '') ? p[0].trim() : wavFile.replace(/\.wav$/i, '');
                 const offset = (parseFloat(p[1]) || 0) / 1000;
+                const consonant = (parseFloat(p[2]) || 0) / 1000;
                 const cutoff = (parseFloat(p[3]) || 0) / 1000;
+                const preutter = (parseFloat(p[4]) || 0) / 1000;
+                const overlap = (parseFloat(p[5]) || 0) / 1000;
 
                 const audioBuf = audioMap[wavFile] || audioMap[wavFile.split('/').pop()];
-                if (audioBuf) registerSample(alias, { buffer: audioBuf, offset, cutoff });
-            });
-        }
+                if (audioBuf) {
+                    const sampleObj = { 
+                        buffer: audioBuf, offset, consonant, cutoff, preutter, overlap, alias, style: styleName 
+                    };
+                    voiceLibrary.samples[alias] = sampleObj;
+                    if (voiceLibrary.styles[styleName]) voiceLibrary.styles[styleName].push(sampleObj);
 
-        function registerSample(alias, obj) {
-            voiceLibrary.samples[alias] = obj;
-            const kanaMatch = alias.match(/[\u3040-\u309F\u30A0-\u30FF]+/);
-            if (kanaMatch) {
-                const kana = kataToHira(kanaMatch[0]);
-                if (!voiceLibrary.samples[kana]) voiceLibrary.samples[kana] = obj;
-            }
-        }
-
-        function renderPhonemeGrid() {
-            const grid = document.getElementById('phoneme-grid');
-            grid.innerHTML = '';
-            const keys = Object.keys(voiceLibrary.samples);
-            keys.forEach(k => {
-                const tag = document.createElement('div');
-                tag.className = 'phoneme-tag has-oto';
-                tag.textContent = k;
-                grid.appendChild(tag);
+                    const kanaMatch = alias.match(/[\u3040-\u309F\u30A0-\u30FF]+/);
+                    if (kanaMatch) {
+                        const kana = kataToHira(kanaMatch[0]);
+                        if (!voiceLibrary.samples[kana]) voiceLibrary.samples[kana] = sampleObj;
+                    }
+                }
             });
         }
 
         function parseTextToPhonemes(text) {
             let input = convertToHiragana(text);
-            let result = [];
+            let rawTokens = [];
             let i = 0;
             let lastKana = '';
 
             while (i < input.length) {
                 let c = input[i];
-                if ([" ", " ", "、", "。", "!", "！", "?", "？", "\n"].includes(c)) {
-                    result.push({ type: 'pause', char: c });
+                if (["、", " ", " "].includes(c)) {
+                    rawTokens.push({ type: 'pause', char: c, durFactor: 0.5 });
+                } else if (["。", "!", "！", "?", "？", "\n"].includes(c)) {
+                    rawTokens.push({ type: 'pause', char: c, durFactor: 1.0 });
                 } else if (c === 'ー') {
                     const extVowel = vowelMap[lastKana] || 'あ';
-                    result.push({ type: 'extend', char: extVowel });
+                    rawTokens.push({ type: 'extend', char: extVowel });
                 } else if (c === 'っ') {
-                    result.push({ type: 'sokuon', char: 'っ' });
+                    rawTokens.push({ type: 'sokuon', char: 'っ' });
                 } else {
-                    result.push({ type: 'char', char: c });
-                    lastKana = c;
+                    let combined = c;
+                    if (i + 1 < input.length && ['ゃ','ゅ','ょ','ぃ','ぇ'].includes(input[i+1])) {
+                        combined += input[i+1];
+                        i++;
+                    }
+                    rawTokens.push({ type: 'char', char: combined });
+                    lastKana = combined;
                 }
                 i++;
             }
+
+            let result = [];
+            let prevVowel = 'ー';
+
+            rawTokens.forEach((tok) => {
+                if (tok.type !== 'char' && tok.type !== 'extend') {
+                    result.push(tok);
+                    if (tok.type === 'pause') prevVowel = 'ー';
+                    return;
+                }
+
+                const currChar = tok.char;
+                const currVowel = vowelMap[currChar] || 'a';
+                let matchedAlias = findBestAlias(currChar, prevVowel);
+
+                result.push({
+                    type: tok.type,
+                    char: currChar,
+                    alias: matchedAlias || currChar,
+                });
+
+                prevVowel = currVowel;
+            });
+
             return result;
         }
 
-        function getSampleForChar(char) {
-            if (voiceLibrary.samples[char]) return voiceLibrary.samples[char];
+        function findBestAlias(char, prevVowel) {
+            const renketsu = (prevVowel === 'ー') ? `- ${char}` : `${prevVowel} ${char}`;
+            const cvvc = (prevVowel !== 'ー') ? `${prevVowel} ${char.charAt(0)}` : null;
+
+            if (currentSelectedStyle === "mode_tandoku") {
+                if (voiceLibrary.samples[char]) return char;
+            } else if (currentSelectedStyle === "mode_renketsu") {
+                if (voiceLibrary.samples[renketsu]) return renketsu;
+            } else if (currentSelectedStyle !== "auto" && voiceLibrary.styles[currentSelectedStyle]) {
+                const targetStyleSamples = voiceLibrary.styles[currentSelectedStyle];
+                const foundInStyle = targetStyleSamples.find(s => s.alias === renketsu || s.alias === char || s.alias.endsWith(' ' + char) || (cvvc && s.alias === cvvc));
+                if (foundInStyle) return foundInStyle.alias;
+            }
+
+            if (voiceLibrary.samples[renketsu]) return renketsu;
+            if (cvvc && voiceLibrary.samples[cvvc]) return cvvc;
+            if (voiceLibrary.samples[char]) return char;
+
+            const keys = Object.keys(voiceLibrary.samples);
+            const matchedKey = keys.find(k => k === renketsu || k.endsWith(' ' + char) || k.endsWith('_' + char) || k.startsWith(char));
+            if (matchedKey) return matchedKey;
+
             const prefixes = ['_', '- ', 'a ', 'i ', 'u ', 'e ', 'o ', 'n '];
             for (let p of prefixes) {
-                if (voiceLibrary.samples[p + char]) return voiceLibrary.samples[p + char];
+                if (voiceLibrary.samples[p + char]) return p + char;
             }
+
+            return char;
+        }
+
+        function getCandidateAliases(char) {
+            const candidates = new Set();
+            if (!voiceLibrary || !voiceLibrary.samples) return Array.from(candidates);
+
+            Object.keys(voiceLibrary.samples).forEach(alias => {
+                if (alias === char || alias.endsWith(' ' + char) || alias.endsWith('_' + char) || alias.includes(char)) {
+                    candidates.add(alias);
+                }
+            });
+            return Array.from(candidates);
+        }
+
+        function getSampleForAlias(alias, char) {
+            if (voiceLibrary.samples[alias]) return voiceLibrary.samples[alias];
+            if (voiceLibrary.samples[char]) return voiceLibrary.samples[char];
             return null;
         }
 
@@ -678,9 +902,24 @@
             canvas = document.getElementById('pitch-canvas');
             ctx = canvas.getContext('2d');
 
-            canvas.addEventListener('mousedown', onCanvasMouseDown);
-            canvas.addEventListener('mousemove', onCanvasMouseMove);
+            canvas.addEventListener('mousedown', onCanvasPointerDown);
+            canvas.addEventListener('mousemove', onCanvasPointerMove);
             window.addEventListener('mouseup', () => { isDragging = false; lastMousePos = null; });
+
+            canvas.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                onCanvasPointerDown({ clientX: touch.clientX, clientY: touch.clientY });
+                e.preventDefault();
+            }, { passive: false });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                onCanvasPointerMove({ clientX: touch.clientX, clientY: touch.clientY });
+                e.preventDefault();
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => { isDragging = false; lastMousePos = null; });
         }
 
         function renderDurationsEditor() {
@@ -689,18 +928,42 @@
 
             const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
             let durs = sentences[activeIndex].durSeconds;
+            let selAliases = sentences[activeIndex].selectedAliases;
             const defaultSpeed = sentences[activeIndex].params.speed;
 
             if (durs.length !== phonemes.length) {
                 sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
                 durs = sentences[activeIndex].durSeconds;
             }
+            if (selAliases.length !== phonemes.length || selAliases.includes(undefined)) {
+                sentences[activeIndex].selectedAliases = phonemes.map(p => p.alias);
+                selAliases = sentences[activeIndex].selectedAliases;
+            }
 
             phonemes.forEach((p, i) => {
                 const item = document.createElement('div');
                 item.className = 'duration-item';
+
+                const candidates = getCandidateAliases(p.char);
+                let selectHtml = '';
+                const currentAlias = selAliases[i] || p.alias;
+                
+                if (candidates.length > 0) {
+                    let options = candidates.map(c => {
+                        const isRenketsu = c.includes(' ') || c.startsWith('-');
+                        const tag = isRenketsu ? ' (連続音/CVVC)' : '';
+                        return `<option value="${c}" ${c === currentAlias ? 'selected' : ''}>${c}${tag}</option>`;
+                    }).join('');
+                    selectHtml = `<select onchange="updateAliasValue(${i}, this.value)">${options}</select>`;
+                } else {
+                    const isRenketsu = currentAlias.includes(' ') || currentAlias.startsWith('-');
+                    const tag = isRenketsu ? ' (連続音/CVVC)' : '';
+                    selectHtml = `<span style="font-size:0.7em; color:var(--text-sub);">${currentAlias}${tag}</span>`;
+                }
+
                 item.innerHTML = `
                     <label>${p.char}</label>
+                    ${selectHtml}
                     <input type="number" step="0.01" min="0.05" max="2.00" value="${durs[i].toFixed(2)}" oninput="updateDurationValue(${i}, this.value)">
                 `;
                 container.appendChild(item);
@@ -710,6 +973,68 @@
         function updateDurationValue(idx, val) {
             const num = parseFloat(val) || 0.1;
             sentences[activeIndex].durSeconds[idx] = Math.max(0.05, Math.min(2.0, num));
+        }
+
+        function updateAliasValue(idx, val) {
+            sentences[activeIndex].selectedAliases[idx] = val;
+        }
+
+        function openBatchAliasModal() {
+            const modal = document.getElementById('batch-alias-modal');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            
+            const uniqueChars = Array.from(new Set(phonemes.map(p => p.char)));
+            const charSelect = document.getElementById('modal-char-select');
+            charSelect.innerHTML = '';
+
+            if (uniqueChars.length === 0) {
+                alert("一括変更可能な音素がありません。");
+                return;
+            }
+
+            uniqueChars.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = c;
+                charSelect.appendChild(opt);
+            });
+
+            onModalCharChange(uniqueChars[0]);
+            modal.style.display = 'flex';
+        }
+
+        function onModalCharChange(char) {
+            const aliasSelect = document.getElementById('modal-alias-select');
+            aliasSelect.innerHTML = '';
+            const candidates = getCandidateAliases(char);
+
+            candidates.forEach(c => {
+                const isRenketsu = c.includes(' ') || c.startsWith('-');
+                const tag = isRenketsu ? ' (連続音/CVVC)' : ' (単独音/その他)';
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.textContent = `${c}${tag}`;
+                aliasSelect.appendChild(opt);
+            });
+        }
+
+        function closeBatchAliasModal() {
+            document.getElementById('batch-alias-modal').style.display = 'none';
+        }
+
+        function applyBatchAlias() {
+            const targetChar = document.getElementById('modal-char-select').value;
+            const targetAlias = document.getElementById('modal-alias-select').value;
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+
+            phonemes.forEach((p, idx) => {
+                if (p.char === targetChar) {
+                    sentences[activeIndex].selectedAliases[idx] = targetAlias;
+                }
+            });
+
+            renderDurationsEditor();
+            closeBatchAliasModal();
         }
 
         function updateIntonationGraph() {
@@ -724,8 +1049,7 @@
                 offsets = sentences[activeIndex].pitchOffsets;
             }
 
-            /* 1音素あたりの最小幅を60pxに設定し、長文になっても圧縮されないようキャンバス幅を確保 */
-            const minColWidth = 60;
+            const minColWidth = 55;
             const calculatedWidth = phonemes.length * minColWidth;
             canvas.width = Math.max(container.clientWidth, calculatedWidth);
             canvas.height = container.clientHeight;
@@ -736,9 +1060,8 @@
             const colWidth = canvas.width / phonemes.length;
             const points = [];
             
-            /* ピッチ高低差の感度を緩和 (最大±12ステップで高さをフル活用) */
             const maxPitchStep = 12;
-            const pixelPerStep = (canvas.height / 2 - 25) / maxPitchStep;
+            const pixelPerStep = (canvas.height / 2 - 20) / maxPitchStep;
 
             phonemes.forEach((p, i) => {
                 const centerX = colWidth * i + colWidth / 2;
@@ -746,18 +1069,15 @@
                 points.push({ x: centerX, y: centerY, startX: colWidth * i, width: colWidth, char: p.char, idx: i });
             });
 
-            /* 基準値のセンターライン */
-            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
             ctx.beginPath(); ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2); ctx.stroke();
 
-            /* 音素区切りガイド線 */
             points.forEach(pt => {
                 ctx.strokeStyle = 'rgba(255,255,255,0.05)';
                 ctx.beginPath(); ctx.moveTo(pt.startX + pt.width, 0); ctx.lineTo(pt.startX + pt.width, canvas.height); ctx.stroke();
             });
 
-            /* なめらかなピッチ曲線 */
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#8c7ae6';
             ctx.lineWidth = 3;
             ctx.beginPath();
             points.forEach((pt, i) => {
@@ -770,25 +1090,24 @@
             });
             ctx.stroke();
 
-            /* ノードポイントとテキストラベル描画 */
             points.forEach(pt => {
                 ctx.fillStyle = '#ffffff';
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, 5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2); ctx.fill();
 
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim();
-                ctx.font = '12px sans-serif';
-                ctx.fillText(pt.char, pt.x - 4, canvas.height - 10);
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#a4b0be';
+                ctx.font = '11px sans-serif';
+                ctx.fillText(pt.char, pt.x - 4, canvas.height - 8);
             });
         }
 
-        function onCanvasMouseDown(e) {
+        function onCanvasPointerDown(e) {
             isDragging = true;
             const rect = canvas.getBoundingClientRect();
             lastMousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
             handleCanvasInteraction(lastMousePos.x, lastMousePos.y);
         }
 
-        function onCanvasMouseMove(e) {
+        function onCanvasPointerMove(e) {
             if (!isDragging) return;
             const rect = canvas.getBoundingClientRect();
             const currentPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -816,9 +1135,8 @@
 
             const centerY = canvas.height / 2;
             const maxPitchStep = 12;
-            const pixelPerStep = (canvas.height / 2 - 25) / maxPitchStep;
+            const pixelPerStep = (canvas.height / 2 - 20) / maxPitchStep;
             
-            /* ピッチ変化量を±12の範囲にマイルド化 */
             const pitchOffset = Math.round((centerY - y) / pixelPerStep);
             sentences[activeIndex].pitchOffsets[targetIdx] = Math.max(-12, Math.min(12, pitchOffset));
 
@@ -830,6 +1148,7 @@
             const defaultSpeed = sentences[activeIndex].params.speed;
             const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
             sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
+            sentences[activeIndex].selectedAliases = phonemes.map(p => p.alias);
 
             updateIntonationGraph();
             renderDurationsEditor();
@@ -852,48 +1171,67 @@
             updateIntonationGraph();
         }
 
-        function schedulePhoneme(ctx, dest, sample, startTime, duration, opts, pitchOffset = 0, isLastPhoneme = false) {
+        function schedulePhoneme(ctx, dest, sample, startTime, duration, opts, pitchOffset = 0, isRenketsu = false) {
             if (!sample || !sample.buffer) return;
 
             const src = ctx.createBufferSource();
             src.buffer = sample.buffer;
 
-            /* ピッチ変化が激しくなりすぎないようスケール補正 */
-            const totalPitch = opts.pitch + (pitchOffset * 0.5);
-            const rate = Math.pow(2, totalPitch / 12);
+            const speedRatio = 0.28 / Math.max(0.1, opts.speed);
+            const totalPitch = opts.pitch + (pitchOffset * 0.45);
+            const rate = Math.pow(2, totalPitch / 12) * Math.min(1.5, Math.max(0.7, speedRatio));
             src.playbackRate.setValueAtTime(rate, startTime);
 
-            const startOffset = sample.offset || 0;
-            let playLen = duration;
+            let startOffset = sample.offset || 0;
+            let actualStartTime = startTime;
+
+            if (sample.preutter > 0) {
+                const effectivePreutter = sample.preutter / rate;
+                const effectiveOverlap = (sample.overlap || 0) / rate;
+                
+                actualStartTime = Math.max(0, startTime - effectiveOverlap);
+                startOffset += Math.max(0, sample.preutter - sample.overlap);
+            }
+
+            let playLen = duration + (sample.overlap ? sample.overlap / rate : 0.02);
             if (sample.cutoff > 0) {
-                playLen = Math.min(duration, sample.buffer.duration - startOffset - sample.cutoff);
+                const availBuf = sample.buffer.duration - startOffset - sample.cutoff;
+                if (availBuf > 0) playLen = Math.min(playLen, availBuf);
             }
 
             let lastNode = src;
+
+            const smoothFilter = ctx.createBiquadFilter();
+            smoothFilter.type = "lowpass";
+            const smoothFreq = 14000 - ((opts.smooth / 100) * 8500); 
+            smoothFilter.frequency.value = Math.max(1800, smoothFreq);
+            src.connect(smoothFilter);
+            lastNode = smoothFilter;
+
             if (opts.tone !== 0) {
-                const filter = ctx.createBiquadFilter();
+                const toneFilter = ctx.createBiquadFilter();
                 if (opts.tone > 0) {
-                    filter.type = "peaking"; filter.frequency.value = 3000; filter.gain.value = opts.tone * 1.5;
+                    toneFilter.type = "peaking"; toneFilter.frequency.value = 3200; toneFilter.gain.value = opts.tone * 1.5;
                 } else {
-                    filter.type = "lowpass"; filter.frequency.value = Math.max(400, 3500 + opts.tone * 280);
+                    toneFilter.type = "lowpass"; toneFilter.frequency.value = Math.max(400, 3600 + opts.tone * 280);
                 }
-                src.connect(filter);
-                lastNode = filter;
+                lastNode.connect(toneFilter);
+                lastNode = toneFilter;
             }
 
             const gain = ctx.createGain();
-            const fadeTime = Math.min(0.04 * (opts.smooth / 100), playLen * 0.2);
-            const releaseTime = isLastPhoneme ? Math.max(fadeTime, 0.08) : fadeTime;
+            const attackTime = (sample.overlap > 0) ? Math.min(0.03, sample.overlap / rate) : (0.005 + (opts.smooth / 100) * 0.015); 
+            const releaseTime = 0.015 + (opts.smooth / 100) * 0.025;
 
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(opts.volume, startTime + fadeTime);
-            gain.gain.setValueAtTime(opts.volume, startTime + Math.max(fadeTime, playLen - releaseTime));
-            gain.gain.linearRampToValueAtTime(0, startTime + playLen + (isLastPhoneme ? 0.05 : 0));
+            gain.gain.setValueAtTime(0, actualStartTime);
+            gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime);
+            gain.gain.setValueAtTime(opts.volume, actualStartTime + Math.max(attackTime, playLen - releaseTime));
+            gain.gain.linearRampToValueAtTime(0, actualStartTime + playLen);
 
             lastNode.connect(gain);
             gain.connect(dest);
 
-            src.start(startTime, startOffset, Math.max(0.05, playLen + releaseTime));
+            src.start(actualStartTime, startOffset, Math.max(0.02, playLen));
         }
 
         async function speakAll() {
@@ -907,26 +1245,25 @@
                 const opts = s.params;
                 let charIdx = 0;
 
-                const soundPhonemesCount = phonemes.filter(p => p.type === 'char' || p.type === 'extend').length;
-
                 phonemes.forEach(p => {
                     if (p.type === 'char' || p.type === 'extend') {
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
-                        const overlap = (charDuration * 0.3) * (opts.smooth / 100);
-                        const sample = getSampleForChar(p.char);
+                        const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
+                        const sample = getSampleForAlias(chosenAlias, p.char);
                         const pOffset = s.pitchOffsets[charIdx] || 0;
-                        const isLast = (charIdx === soundPhonemesCount - 1);
+                        const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
                         
-                        if (sample) schedulePhoneme(audioCtx, audioCtx.destination, sample, currentTime, charDuration, opts, pOffset, isLast);
-                        currentTime += Math.max(0.02, charDuration - (isLast ? 0 : overlap));
+                        if (sample) schedulePhoneme(audioCtx, audioCtx.destination, sample, currentTime, charDuration, opts, pOffset, isRenketsu);
+                        
+                        currentTime += charDuration;
                         charIdx++;
                     } else if (p.type === 'pause') {
-                        currentTime += opts.speed * 1.2;
+                        currentTime += opts.speed * (p.durFactor || 0.8);
                     } else if (p.type === 'sokuon') {
-                        currentTime += opts.speed * 0.6;
+                        currentTime += opts.speed * 0.45;
                     }
                 });
-                currentTime += 0.4;
+                currentTime += 0.25;
             });
         }
 
@@ -945,10 +1282,10 @@
                         const d = (s.durSeconds && s.durSeconds[cIdx]) ? s.durSeconds[cIdx] : opts.speed;
                         totalDur += d;
                         cIdx++;
-                    } else if (p.type === 'pause') totalDur += opts.speed * 1.2;
-                    else totalDur += opts.speed * 0.6;
+                    } else if (p.type === 'pause') totalDur += opts.speed * (p.durFactor || 0.8);
+                    else totalDur += opts.speed * 0.45;
                 });
-                totalDur += 0.4;
+                totalDur += 0.25;
             });
 
             const offlineCtx = new OfflineAudioContext(1, Math.ceil(sampleRate * totalDur), sampleRate);
@@ -958,26 +1295,25 @@
                 const phonemes = parseTextToPhonemes(s.text);
                 const opts = s.params;
                 let charIdx = 0;
-                const soundPhonemesCount = phonemes.filter(p => p.type === 'char' || p.type === 'extend').length;
 
                 phonemes.forEach(p => {
                     if (p.type === 'char' || p.type === 'extend') {
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
-                        const overlap = (charDuration * 0.3) * (opts.smooth / 100);
-                        const sample = getSampleForChar(p.char);
+                        const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
+                        const sample = getSampleForAlias(chosenAlias, p.char);
                         const pOffset = s.pitchOffsets[charIdx] || 0;
-                        const isLast = (charIdx === soundPhonemesCount - 1);
+                        const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
 
-                        if (sample) schedulePhoneme(offlineCtx, offlineCtx.destination, sample, currentTime, charDuration, opts, pOffset, isLast);
-                        currentTime += Math.max(0.02, charDuration - (isLast ? 0 : overlap));
+                        if (sample) schedulePhoneme(offlineCtx, offlineCtx.destination, sample, currentTime, charDuration, opts, pOffset, isRenketsu);
+                        currentTime += charDuration;
                         charIdx++;
                     } else if (p.type === 'pause') {
-                        currentTime += opts.speed * 1.2;
+                        currentTime += opts.speed * (p.durFactor || 0.8);
                     } else if (p.type === 'sokuon') {
-                        currentTime += opts.speed * 0.6;
+                        currentTime += opts.speed * 0.45;
                     }
                 });
-                currentTime += 0.4;
+                currentTime += 0.25;
             });
 
             const rendered = await offlineCtx.startRendering();
