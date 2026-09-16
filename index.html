@@ -101,14 +101,15 @@
             flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 120px;
         }
         .phoneme-grid {
-            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px;
+            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 6px;
             overflow-y: auto; background: var(--bg-base); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);
-            max-height: 200px;
+            max-height: 220px;
         }
         .phoneme-tag {
-            background: var(--bg-card); font-size: 0.8em; padding: 6px 4px; border-radius: 6px; text-align: center;
-            border: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            font-weight: bold; color: var(--text-main);
+            background: var(--bg-card); font-size: 0.78em; padding: 6px 4px; border-radius: 6px; text-align: center;
+            border: 1px solid var(--border-color); word-break: break-all; line-height: 1.2;
+            font-weight: bold; color: var(--text-main); display: flex; align-items: center; justify-content: center;
+            min-height: 32px;
         }
         .phoneme-tag.has-oto { border-color: var(--primary); color: var(--primary); background: rgba(140, 122, 230, 0.15); }
 
@@ -179,7 +180,7 @@
         }
         .param-group { display: flex; flex-direction: column; gap: 4px; font-size: 0.8em; }
         .param-group label { display: flex; justify-content: space-between; font-weight: bold; color: var(--text-sub); }
-        .param-group label span { color: var(--primary); cursor: pointer; user-select: none; padding: 2px 4px; border-radius: 4px; background: rgba(140, 122, 230, 0.1); }
+        .param-group label span { color: var(--primary); cursor: ew-resize; user-select: none; padding: 2px 4px; border-radius: 4px; background: rgba(140, 122, 230, 0.1); }
         input[type="range"] { accent-color: var(--primary); width: 100%; cursor: pointer; height: 28px; }
 
         .mode-toggle { display: flex; gap: 12px; align-items: center; font-size: 0.8em; color: var(--text-sub); flex-wrap: wrap; }
@@ -206,14 +207,21 @@
         }
         .modal-card {
             background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-main);
-            width: 320px; max-width: 90%; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+            width: 360px; max-width: 90%; padding: 16px; display: flex; flex-direction: column; gap: 12px;
         }
         .modal-card h3 { margin: 0; font-size: 1.0em; color: var(--primary); }
         .modal-card label { font-size: 0.8em; color: var(--text-sub); font-weight: bold; }
         .modal-card select { width: 100%; }
 
+        .terms-box {
+            background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 10px; font-size: 0.8em; color: var(--text-main); line-height: 1.5; max-height: 220px; overflow-y: auto;
+        }
+        .terms-box ul { margin: 4px 0 0 0; padding-left: 18px; }
+        .terms-box li { margin-bottom: 6px; }
+
         footer {
-            height: 32px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+            height: 36px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
             display: flex; align-items: center; justify-content: center; font-size: 0.75em; color: var(--text-sub); flex-shrink: 0; gap: 8px;
         }
         footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
@@ -237,7 +245,15 @@
             .btn-sm { padding: 6px 10px; font-size: 0.8em; }
             .sentence-row { padding: 4px 6px; }
             .sentence-row input[type="text"] { padding: 8px; }
-            .duration-item { min-width: 120px; padding: 6px; }
+
+            .durations-editor { padding: 10px 8px; gap: 10px; }
+            .duration-item { min-width: 140px; padding: 8px; gap: 6px; }
+            .duration-item select { font-size: 0.82em; padding: 6px 4px; }
+            .duration-item input[type="number"] { font-size: 0.95em; padding: 6px; }
+
+            footer {
+                height: 48px; flex-direction: column; gap: 2px; padding: 6px 0; font-size: 0.7em;
+            }
         }
     </style>
 </head>
@@ -246,6 +262,7 @@
     <header>
         <h1>🎙️ Yuyu HANASU Studio</h1>
         <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="openTermsModal()">ℹ️ 利用規約</button>
             <select id="theme-select" onchange="changeTheme(this.value)">
                 <option value="dark">🌙</option>
                 <option value="light">☀️</option>
@@ -390,10 +407,27 @@
         </div>
     </div>
 
+    <!-- モーダル: サイトの注意事項・利用規約 -->
+    <div class="modal-overlay" id="terms-modal">
+        <div class="modal-card">
+            <h3>⚠️ ご利用にあたっての注意事項</h3>
+            <div class="terms-box">
+                <ul>
+                    <li>当サイトの使用（WEBブラウザ上での音声合成・加工および出力）に対する利用が許諾されているUTAU音源・音声ライブラリをご使用ください。</li>
+                    <li>使用する音源の利用規約（キャラクター利用ガイドライン・二次創作規約等）を必ず遵守してください。</li>
+                    <li>生成された音声の商用利用や配布を行う場合は、各音源の権利者が定める規約に従ってください。</li>
+                    <li>当ツールを利用したことによって生じたトラブル等について、当サイトは一切の責任を負いかねます。</li>
+                </ul>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                <button class="btn btn-primary btn-sm" onclick="closeTermsModal()">同意して閉じる</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        <span>Coding: Gemini</span> | 
-        <span>Site Suggestion: <a href="https://x.com/yourei_osirase" target="_blank" rel="noopener noreferrer">ゆーれい</a></span> | 
-        <span>© Yuyu HANASU Studio</span>
+        <div><span>Coding: Gemini</span> | <span>Site Suggestion: <a href="https://x.com/yourei_osirase" target="_blank" rel="noopener noreferrer">ゆーれい</a></span></div>
+        <div><span>© Yuyu HANASU Studio</span></div>
     </footer>
 
     <script>
@@ -460,29 +494,89 @@
             initCanvas();
             renderSentences();
             setupResetListeners();
+            setupDragValueListeners();
+            
+            // 開いた瞬間に利用規約を表示
+            openTermsModal();
+
             window.addEventListener('resize', () => {
                 updateIntonationGraph();
             });
         });
 
+        // パソコンでのドラッグによる数値調整機能
+        function setupDragValueListeners() {
+            const keys = ['speed', 'pitch', 'smooth', 'tone', 'volume'];
+            keys.forEach(key => {
+                const valEl = document.getElementById(`val-${key}`);
+                const sliderEl = document.getElementById(`param-${key}`);
+                if (!valEl || !sliderEl) return;
+
+                let isDragging = false;
+                let startX = 0;
+                let startVal = 0;
+
+                valEl.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startVal = parseFloat(sliderEl.value);
+                    document.body.style.cursor = 'ew-resize';
+                    e.preventDefault();
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const min = parseFloat(sliderEl.min);
+                    const max = parseFloat(sliderEl.max);
+                    const step = parseFloat(sliderEl.step) || 1;
+
+                    // ドラッグ感度調整
+                    const sensitivity = (max - min) / 200;
+                    let newVal = startVal + dx * sensitivity;
+                    
+                    // step刻みに丸める
+                    newVal = Math.round(newVal / step) * step;
+                    newVal = Math.max(min, Math.min(max, newVal));
+
+                    sliderEl.value = newVal;
+                    updateParam(key, newVal);
+                });
+
+                window.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.body.style.cursor = '';
+                    }
+                });
+            });
+        }
+
+        // 数値テキストおよびスライダー本体のダブルクリック/タップでの初期化設定
         function setupResetListeners() {
             const keys = ['speed', 'pitch', 'smooth', 'tone', 'volume'];
             keys.forEach(key => {
-                const el = document.getElementById(`val-${key}`);
-                if (!el) return;
+                const valEl = document.getElementById(`val-${key}`);
+                const sliderEl = document.getElementById(`param-${key}`);
 
-                el.addEventListener('dblclick', () => resetParam(key));
+                const attachReset = (el) => {
+                    if (!el) return;
+                    el.addEventListener('dblclick', () => resetParam(key));
 
-                let lastTap = 0;
-                el.addEventListener('touchend', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    if (tapLength < 300 && tapLength > 0) {
-                        resetParam(key);
-                        e.preventDefault();
-                    }
-                    lastTap = currentTime;
-                });
+                    let lastTap = 0;
+                    el.addEventListener('touchend', (e) => {
+                        const currentTime = new Date().getTime();
+                        const tapLength = currentTime - lastTap;
+                        if (tapLength < 300 && tapLength > 0) {
+                            resetParam(key);
+                            e.preventDefault();
+                        }
+                        lastTap = currentTime;
+                    });
+                };
+
+                attachReset(valEl);
+                attachReset(sliderEl);
             });
         }
 
@@ -508,6 +602,13 @@
 
         function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
         function changeColor(color) { document.documentElement.setAttribute('data-color', color); }
+
+        function openTermsModal() {
+            document.getElementById('terms-modal').style.display = 'flex';
+        }
+        function closeTermsModal() {
+            document.getElementById('terms-modal').style.display = 'none';
+        }
 
         function initAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1251,7 +1352,6 @@
             gain.gain.setValueAtTime(0, actualStartTime);
 
             if (isRenketsu) {
-                // 連続音・CVVC時の前の母音（立ち上がり部分）を小さく抑えて自然にアタックへと繋げる
                 const vFadeTime = Math.min(0.04, Math.max(0.015, (sample.preutter || 0.03) / rate));
                 gain.gain.linearRampToValueAtTime(opts.volume * 0.35, actualStartTime + vFadeTime);
                 gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime + vFadeTime);
