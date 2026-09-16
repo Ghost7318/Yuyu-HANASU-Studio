@@ -43,9 +43,7 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        body {
-            display: flex; flex-direction: column; height: 100vh;
-        }
+        body { display: flex; flex-direction: column; height: 100vh; }
 
         header {
             height: 50px; background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
@@ -102,19 +100,17 @@
         .style-selector-card label { font-weight: bold; color: var(--text-sub); display: flex; justify-content: space-between; }
         .style-selector-card select { width: 100%; padding: 6px; font-weight: bold; background: var(--bg-base); color: var(--primary); border: 1px solid var(--border-color); border-radius: 6px; }
 
-        .phoneme-section {
-            flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 120px;
-        }
+        .phoneme-section { flex: 1; display: flex; flex-direction: column; gap: 6px; min-height: 180px; }
         .phoneme-grid {
-            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 6px;
-            overflow-y: auto; background: var(--bg-base); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);
-            max-height: 220px;
+            flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px;
+            overflow-y: auto; background: var(--bg-base); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);
+            max-height: 320px;
         }
         .phoneme-tag {
-            background: var(--bg-card); font-size: 0.78em; padding: 6px 4px; border-radius: 6px; text-align: center;
-            border: 1px solid var(--border-color); word-break: break-all; line-height: 1.2;
+            background: var(--bg-card); font-size: 0.85em; padding: 8px 6px; border-radius: 6px; text-align: center;
+            border: 1px solid var(--border-color); word-break: break-all; overflow-wrap: anywhere; line-height: 1.25;
             font-weight: bold; color: var(--text-main); display: flex; align-items: center; justify-content: center;
-            min-height: 32px;
+            min-height: 42px;
         }
         .phoneme-tag.has-oto { border-color: var(--primary); color: var(--primary); background: rgba(140, 122, 230, 0.15); }
 
@@ -148,7 +144,7 @@
         .canvas-wrapper { 
             position: relative; 
             width: 100%; 
-            height: 180px; 
+            height: 280px; 
             background: var(--bg-base); 
             border-radius: 8px; 
             border: 1px solid var(--border-color); 
@@ -180,9 +176,7 @@
             background: var(--bg-panel); border-radius: var(--radius-main); padding: 10px;
             border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;
         }
-        .params-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;
-        }
+        .params-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
         .param-group { display: flex; flex-direction: column; gap: 4px; font-size: 0.8em; }
         .param-group label { display: flex; justify-content: space-between; font-weight: bold; color: var(--text-sub); }
         .param-group label span { color: var(--primary); cursor: ew-resize; user-select: none; padding: 2px 4px; border-radius: 4px; background: rgba(140, 122, 230, 0.1); }
@@ -202,7 +196,6 @@
         .btn-secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); }
         .btn-secondary.active { background: var(--primary); color: white; border-color: var(--primary); }
         .btn-sm { padding: 5px 10px; font-size: 0.75em; border-radius: 6px; }
-        .btn-danger { background: var(--accent-pink); color: white; }
 
         select { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; outline: none; font-size: 0.85em; }
 
@@ -232,7 +225,6 @@
         }
         footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
 
-        /* スマホ向け調整 */
         @media (max-width: 768px) {
             header { padding: 0 8px; }
             header h1 { font-size: 0.9em; }
@@ -245,26 +237,16 @@
             .main-content { display: none; height: 100%; padding: 10px; width: 100%; }
             .main-content.active { display: flex; }
             
-            /* 文章リスト表示領域の拡大・最適化 */
-            .sentences-container {
-                max-height: 280px;
-                min-height: 120px;
-            }
-            .sentence-row {
-                padding: 6px;
-            }
-            .sentence-row input[type="text"] {
-                font-size: 1.0em; /* タップしやすく見切れにくいサイズ */
-                padding: 10px 8px;
-            }
+            .sentences-container { max-height: 280px; min-height: 120px; }
+            .sentence-row { padding: 6px; }
+            .sentence-row input[type="text"] { font-size: 1.0em; padding: 10px 8px; }
 
-            .canvas-wrapper { height: 150px; }
+            .canvas-wrapper { height: 220px; }
             .params-grid { grid-template-columns: 1fr 1fr; gap: 10px 8px; }
             .param-group label { font-size: 0.75em; }
             
             .controls-bar { width: 100%; gap: 8px; }
             .controls-bar .btn { flex: 1; padding: 12px; font-size: 0.9em; }
-            
             .btn-sm { padding: 6px 8px; font-size: 0.75em; }
 
             .durations-editor { padding: 10px 8px; gap: 10px; min-height: 120px; }
@@ -272,9 +254,7 @@
             .duration-item select { font-size: 0.85em; padding: 6px 4px; }
             .duration-item input[type="number"] { font-size: 0.95em; padding: 6px 4px; }
 
-            footer {
-                height: 44px; flex-direction: column; gap: 2px; padding: 4px 0; font-size: 0.68em;
-            }
+            footer { height: 44px; flex-direction: column; gap: 2px; padding: 4px 0; font-size: 0.68em; }
         }
     </style>
 </head>
@@ -322,7 +302,6 @@
                 </div>
             </div>
 
-            <!-- 音源スタイル・一括切替ドロップダウン -->
             <div class="style-selector-card">
                 <label>🎭 音源スタイル・方式一括切替</label>
                 <select id="style-select" onchange="onStyleChange(this.value)">
@@ -352,8 +331,12 @@
             <!-- イントネーション エディタ -->
             <div class="intl-card">
                 <div class="intl-card-header">
-                    <span>🎶 イントネーション / ピッチ (なぞって調整)</span>
+                    <span>✏️ ピッチカーブ (SynthesizerV風フリーハンド ＆ 各文字イントネーショングラフ対応)</span>
                     <div class="intl-tools">
+                        <select id="draw-mode-select" onchange="changeDrawMode(this.value)" style="font-size:0.75em; padding:3px 6px;">
+                            <option value="curve">➰ フリーハンド曲線 (SynthesizerV風)</option>
+                            <option value="line">📈 各文字のイントネーション（点と線）</option>
+                        </select>
                         <button class="btn btn-secondary btn-sm" onclick="applyPreset('question')">❓ 疑問</button>
                         <button class="btn btn-secondary btn-sm" onclick="applyPreset('exclaim')">❗ 強調</button>
                         <button class="btn btn-secondary btn-sm" onclick="resetIntonation()">リセット</button>
@@ -388,8 +371,8 @@
                         <input type="range" id="param-pitch" min="-12" max="12" step="1" value="0" oninput="updateParam('pitch', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>なめらかさ <span id="val-smooth" class="resetable-val">40%</span></label>
-                        <input type="range" id="param-smooth" min="0" max="100" step="5" value="40" oninput="updateParam('smooth', this.value)">
+                        <label>なめらかさ <span id="val-smooth" class="resetable-val">50%</span></label>
+                        <input type="range" id="param-smooth" min="0" max="100" step="5" value="50" oninput="updateParam('smooth', this.value)">
                     </div>
                     <div class="param-group">
                         <label>トーン <span id="val-tone" class="resetable-val">0</span></label>
@@ -409,7 +392,7 @@
         </div>
     </div>
 
-    <!-- モーダル: 同じひらがなを含むエイリアスをまとめて変更 -->
+    <!-- モーダル: 一括エイリアス変更 -->
     <div class="modal-overlay" id="batch-alias-modal">
         <div class="modal-card">
             <h3>🔁 一括エイリアス変更</h3>
@@ -437,21 +420,21 @@
                 <ul>
                     <li><b>音源の選択:</b> 画面左側（スマホは「音源・スタイル」タブ）の「UTAU Zip音源を選択」枠をクリックし、UTAU音源のZipファイルを読み込んでください。</li>
                     <li><b>文章入力:</b> ひらがな・カタカナ・ローマ字入力に対応しています。入力すると自動的にひらがなに変換されます。</li>
-                    <li><b>テキストファイル読み込み:</b> 「📄 読み込み」ボタンから<code>.txt</code>ファイルを読み込んで、文章を一括入力できます（1行ごとに1文として最大10文まで指定可能）。</li>
-                    <li><b>伸ばし棒（ー）:</b> 直前の母音を伸ばして発声します。（例: 「きー」→「きい」）</li>
-                    <li><b>句読点・スペース:</b> 読点「、」やスペースは短いポーズ、句点「。」「！」「？」は少し長めのポーズ（間）を挿入します。</li>
-                    <li><b>ブレス（呼吸音）の活用:</b> 文章内に <code>[br]</code> または <code>[息]</code> と入力すると、音源内にブレス素材がある場合に呼吸音を挿入できます。</li>
+                    <li><b>テキストファイル読み込み:</b> 「📄 読み込み」ボタンから<code>.txt</code>ファイルを読み込んで、文章を一括入力できます（最大10文）。</li>
+                    <li><b>伸ばし棒（ー）:</b> 直前の母音を伸ばして発声します。</li>
+                    <li><b>句読点・スペース:</b> 読点「、」やスペースは短いポーズ、句点「。」「！」「？」は少し長めのポーズを挿入します。</li>
+                    <li><b>ブレスの活用:</b> 文章内に <code>br</code> や <code>[br]</code>、<code>息</code> や <code>[息]</code> と入力すると呼吸音を挿入できます。</li>
                 </ul>
 
                 <h4>🎛️ 音声の微調整・編集機能</h4>
                 <ul>
-                    <li><b>イントネーション:</b> 波形エリアをマウスや指でなぞることで、音節ごとのピッチ（高低）を自由に調整できます。</li>
-                    <li><b>音素長・エイリアス調整:</b> エディタ下部で文字ごとの長さ（秒数）を変更したり、単独音・連続音の切り替えが可能です。</li>
+                    <li><b>ピッチ描画モード切替:</b> 右上のメニューから「フリーハンド曲線」と「各文字のイントネーション（点と線）」を選択できます。フリーハンドはSynthesizerVのようなめらかなピッチ描画が可能です。</li>
+                    <li><b>文字単位のイントネーション:</b> 点と線モードでは、各文字の領域内にアンカーポイントを配置し、文字ごとのピッチ高低差を直感的にグラフィカル調整できます。</li>
                 </ul>
 
                 <h4>⚠️ 利用規約・注意事項</h4>
                 <ul>
-                    <li>当サイトの仕様（WEBブラウザ上での音声合成・加工および出力）に対する利用が許諾されているUTAU音源・音声ライブラリをご使用ください。</li>
+                    <li>当サイトの仕様に対する利用が許諾されているUTAU音源・音声ライブラリをご使用ください。</li>
                     <li>使用する音源の利用規約（キャラクター利用ガイドライン・二次創作規約等）を必ず遵守してください。</li>
                     <li>生成された音声の商用利用や配布を行う場合は、各音源の権利者が定める規約に従ってください。</li>
                     <li>当ツールを利用したことによって生じたトラブル等について、当サイトは一切の責任を負いかねます。</li>
@@ -472,6 +455,7 @@
         let voiceLibrary = { name: "未選択", samples: {}, iconUrl: null, styles: {} };
         let currentSelectedStyle = "auto";
         let audioCtx = null;
+        let drawMode = 'curve';
 
         const kanjiDict = {
             '私':'わたし','僕':'ぼく','俺':'おれ','今日':'きょう','明日':'あした','昨日':'きのう',
@@ -520,10 +504,12 @@
             'ん':'n'
         };
 
-        const defaultParams = { speed: 0.28, pitch: 0, smooth: 40, tone: 0, volume: 1.0 };
+        const defaultParams = { speed: 0.28, pitch: 0, smooth: 50, tone: 0, volume: 1.0 };
+        const POINTS_PER_CHAR = 32; 
+        const MAX_PITCH_RANGE = 6;
 
         let sentences = [
-            { text: "こんにちわ", params: { ...defaultParams }, pitchOffsets: [], durSeconds: [], selectedAliases: [] }
+            { text: "こんにちわ", params: { ...defaultParams }, pitchCurves: [], durSeconds: [], selectedAliases: [] }
         ];
         let activeIndex = 0;
         let paramApplyMode = 'single';
@@ -533,8 +519,6 @@
             renderSentences();
             setupResetListeners();
             setupDragValueListeners();
-            
-            // 開いた瞬間に利用規約・使い方を表示
             openTermsModal();
 
             window.addEventListener('resize', () => {
@@ -542,7 +526,11 @@
             });
         });
 
-        // パソコンでのドラッグによる数値調整機能
+        function changeDrawMode(mode) {
+            drawMode = mode;
+            updateIntonationGraph();
+        }
+
         function setupDragValueListeners() {
             const keys = ['speed', 'pitch', 'smooth', 'tone', 'volume'];
             keys.forEach(key => {
@@ -569,11 +557,9 @@
                     const max = parseFloat(sliderEl.max);
                     const step = parseFloat(sliderEl.step) || 1;
 
-                    // ドラッグ感度調整
                     const sensitivity = (max - min) / 200;
                     let newVal = startVal + dx * sensitivity;
                     
-                    // step刻みに丸める
                     newVal = Math.round(newVal / step) * step;
                     newVal = Math.max(min, Math.min(max, newVal));
 
@@ -590,7 +576,6 @@
             });
         }
 
-        // 数値テキストおよびスライダー本体のダブルクリック/タップでの初期化設定
         function setupResetListeners() {
             const keys = ['speed', 'pitch', 'smooth', 'tone', 'volume'];
             keys.forEach(key => {
@@ -641,12 +626,8 @@
         function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
         function changeColor(color) { document.documentElement.setAttribute('data-color', color); }
 
-        function openTermsModal() {
-            document.getElementById('terms-modal').style.display = 'flex';
-        }
-        function closeTermsModal() {
-            document.getElementById('terms-modal').style.display = 'none';
-        }
+        function openTermsModal() { document.getElementById('terms-modal').style.display = 'flex'; }
+        function closeTermsModal() { document.getElementById('terms-modal').style.display = 'none'; }
 
         function initAudioContext() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -668,13 +649,10 @@
             let i = 0;
             let lower = str.toLowerCase();
             while (i < lower.length) {
-                // ブレス記号 [br] や [息] は変換処理からスキップ
-                if (lower.startsWith('[br]', i)) {
-                    result += '[br]'; i += 4; continue;
-                }
-                if (str.startsWith('[息]', i)) {
-                    result += '[息]'; i += 3; continue;
-                }
+                if (lower.startsWith('[br]', i)) { result += '[br]'; i += 4; continue; }
+                if (lower.startsWith('br', i) && (i + 2 >= lower.length || !/[a-z]/.test(lower[i+2]))) { result += '[br]'; i += 2; continue; }
+                if (str.startsWith('[息]', i)) { result += '[息]'; i += 3; continue; }
+                if (str.startsWith('息', i)) { result += '[息]'; i += 1; continue; }
 
                 let matched = false;
                 for (let len = 4; len >= 1; len--) {
@@ -688,32 +666,15 @@
                         }
                     }
                 }
-                if (!matched) {
-                    result += str[i];
-                    i++;
-                }
+                if (!matched) { result += str[i]; i++; }
             }
             return result;
         }
 
         function addSentence(textVal = "あたらしいぶんしょうです") {
             if (sentences.length >= 10) return alert("文章は最大10文までです。");
-            sentences.push({ text: textVal, params: { ...sentences[activeIndex].params }, pitchOffsets: [], durSeconds: [], selectedAliases: [] });
+            sentences.push({ text: textVal, params: { ...sentences[activeIndex].params }, pitchCurves: [], durSeconds: [], selectedAliases: [] });
             activeIndex = sentences.length - 1;
-            renderSentences();
-        }
-
-        function removeSentence(idx, e) {
-            e.stopPropagation();
-            if (sentences.length <= 1) return alert("最低1つの文章が必要です。");
-            sentences.splice(idx, 1);
-            if (activeIndex >= sentences.length) activeIndex = sentences.length - 1;
-            renderSentences();
-        }
-
-        function selectSentence(idx) {
-            if (activeIndex === idx) return;
-            activeIndex = idx;
             renderSentences();
         }
 
@@ -738,9 +699,16 @@
             renderDurationsEditor();
         }
 
+        function selectSentence(idx) {
+            if (activeIndex === idx) return;
+            activeIndex = idx;
+            renderSentences();
+        }
+
         function onInputTextChange(idx, inputElem) {
             sentences[idx].text = inputElem.value;
             sentences[idx].selectedAliases = [];
+            sentences[idx].durSeconds = [];
             updateIntonationGraph();
             renderDurationsEditor();
         }
@@ -750,6 +718,7 @@
             sentences[idx].text = autoConverted;
             inputElem.value = autoConverted;
             sentences[idx].selectedAliases = [];
+            sentences[idx].durSeconds = [];
             updateIntonationGraph();
             renderDurationsEditor();
         }
@@ -762,9 +731,17 @@
         function updateParam(key, val) {
             const numVal = parseFloat(val);
             if (paramApplyMode === 'all') {
-                sentences.forEach(s => s.params[key] = numVal);
+                sentences.forEach(s => {
+                    s.params[key] = numVal;
+                    if (key === 'speed') {
+                        s.durSeconds = [];
+                    }
+                });
             } else {
                 sentences[activeIndex].params[key] = numVal;
+                if (key === 'speed') {
+                    sentences[activeIndex].durSeconds = [];
+                }
             }
             syncParamsToUI();
             renderDurationsEditor();
@@ -790,15 +767,10 @@
             document.getElementById('val-volume').textContent = p.volume.toFixed(2);
         }
 
-        function handleFileSelect(e) { 
-            if (e.target.files.length) handleZipFile(e.target.files[0]); 
-        }
+        function handleFileSelect(e) { if (e.target.files.length) handleZipFile(e.target.files[0]); }
 
         async function handleZipFile(file) {
-            if (!file.name.endsWith('.zip')) {
-                alert('Zip形式のファイル (.zip) のみ読み込み可能です。');
-                return;
-            }
+            if (!file.name.endsWith('.zip')) return alert('Zipファイル (.zip) を選択してください。');
 
             initAudioContext();
             document.getElementById('status-text').textContent = "解析中...";
@@ -870,12 +842,9 @@
             const select = document.getElementById('style-select');
             select.innerHTML = '<option value="auto">🤖 自動判定 (一番自然な設定)</option>';
             
-            const styleKeys = Object.keys(voiceLibrary.styles);
-            styleKeys.forEach(st => {
+            Object.keys(voiceLibrary.styles).forEach(st => {
                 const opt = document.createElement('option');
-                opt.value = st;
-                opt.textContent = `✨ ${st}`;
-                select.appendChild(opt);
+                opt.value = st; opt.textContent = `✨ ${st}`; select.appendChild(opt);
             });
             
             const optRen = document.createElement('option'); optRen.value = "mode_renketsu"; optRen.textContent = "⚙️ 連続音優先"; select.appendChild(optRen);
@@ -898,7 +867,7 @@
             if (lines.length > 0) {
                 sentences = [];
                 lines.slice(0, 10).forEach(line => {
-                    sentences.push({ text: convertToHiragana(line), params: { ...defaultParams }, pitchOffsets: [], durSeconds: [], selectedAliases: [] });
+                    sentences.push({ text: convertToHiragana(line), params: { ...defaultParams }, pitchCurves: [], durSeconds: [], selectedAliases: [] });
                 });
                 activeIndex = 0;
                 renderSentences();
@@ -909,8 +878,7 @@
 
         function setVoiceIcon(url) {
             voiceLibrary.iconUrl = url;
-            const container = document.getElementById('voice-icon');
-            container.innerHTML = `<img src="${url}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;">`;
+            document.getElementById('voice-icon').innerHTML = `<img src="${url}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;">`;
         }
 
         function renderPhonemeGrid() {
@@ -921,9 +889,7 @@
                 const div = document.createElement('div');
                 div.className = 'phoneme-tag has-oto';
                 let label = key;
-                if (sample && sample.style && sample.style !== "通常音源") {
-                    label += ` [${sample.style}]`;
-                }
+                if (sample && sample.style && sample.style !== "通常音源") label += `\n[${sample.style}]`;
                 div.textContent = label;
                 grid.appendChild(div);
             });
@@ -945,13 +911,10 @@
 
                 const audioBuf = audioMap[wavFile] || audioMap[wavFile.split('/').pop()];
                 if (audioBuf) {
-                    const sampleObj = { 
-                        buffer: audioBuf, offset, consonant, cutoff, preutter, overlap, alias, style: styleName 
-                    };
+                    const sampleObj = { buffer: audioBuf, offset, consonant, cutoff, preutter, overlap, alias, style: styleName };
                     voiceLibrary.samples[alias] = sampleObj;
                     if (voiceLibrary.styles[styleName]) voiceLibrary.styles[styleName].push(sampleObj);
 
-                    // ブレス音源の自動登録（br, 息, breath等）
                     if (alias.match(/^(br|息|breath|panto)/i)) {
                         voiceLibrary.samples['[br]'] = sampleObj;
                         voiceLibrary.samples['[息]'] = sampleObj;
@@ -973,17 +936,8 @@
             let lastKana = '';
 
             while (i < input.length) {
-                // ブレスタグ [br] または [息] の読み込み対応
-                if (input.startsWith('[br]', i)) {
-                    rawTokens.push({ type: 'breath', char: '[br]' });
-                    i += 4;
-                    continue;
-                }
-                if (input.startsWith('[息]', i)) {
-                    rawTokens.push({ type: 'breath', char: '[息]' });
-                    i += 3;
-                    continue;
-                }
+                if (input.startsWith('[br]', i)) { rawTokens.push({ type: 'breath', char: '[br]' }); i += 4; continue; }
+                if (input.startsWith('[息]', i)) { rawTokens.push({ type: 'breath', char: '[息]' }); i += 3; continue; }
 
                 let c = input[i];
                 if (["、", " ", " "].includes(c)) {
@@ -1028,12 +982,7 @@
                 const currVowel = vowelMap[currChar] || 'a';
                 let matchedAlias = findBestAlias(currChar, prevVowel);
 
-                result.push({
-                    type: tok.type,
-                    char: currChar,
-                    alias: matchedAlias || currChar,
-                });
-
+                result.push({ type: tok.type, char: currChar, alias: matchedAlias || currChar });
                 prevVowel = currVowel;
             });
 
@@ -1044,8 +993,7 @@
             if (voiceLibrary.samples['[br]']) return '[br]';
             if (voiceLibrary.samples['[息]']) return '[息]';
             const keys = Object.keys(voiceLibrary.samples);
-            const found = keys.find(k => k.match(/^(br|息|breath|panto)/i));
-            return found || null;
+            return keys.find(k => k.match(/^(br|息|breath|panto)/i)) || null;
         }
 
         function findBestAlias(char, prevVowel) {
@@ -1132,11 +1080,11 @@
             let selAliases = sentences[activeIndex].selectedAliases;
             const defaultSpeed = sentences[activeIndex].params.speed;
 
-            if (durs.length !== phonemes.length) {
+            if (!durs || durs.length !== phonemes.length) {
                 sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
                 durs = sentences[activeIndex].durSeconds;
             }
-            if (selAliases.length !== phonemes.length || selAliases.includes(undefined)) {
+            if (!selAliases || selAliases.length !== phonemes.length || selAliases.includes(undefined)) {
                 sentences[activeIndex].selectedAliases = phonemes.map(p => p.alias);
                 selAliases = sentences[activeIndex].selectedAliases;
             }
@@ -1188,16 +1136,10 @@
             const charSelect = document.getElementById('modal-char-select');
             charSelect.innerHTML = '';
 
-            if (uniqueChars.length === 0) {
-                alert("一括変更可能な音素がありません。");
-                return;
-            }
+            if (uniqueChars.length === 0) return alert("一括変更可能な音素がありません。");
 
             uniqueChars.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = c;
-                charSelect.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = c; opt.textContent = c; charSelect.appendChild(opt);
             });
 
             onModalCharChange(uniqueChars[0]);
@@ -1207,21 +1149,14 @@
         function onModalCharChange(char) {
             const aliasSelect = document.getElementById('modal-alias-select');
             aliasSelect.innerHTML = '';
-            const candidates = getCandidateAliases(char);
-
-            candidates.forEach(c => {
+            getCandidateAliases(char).forEach(c => {
                 const isRenketsu = c.includes(' ') || c.startsWith('-');
                 const tag = isRenketsu ? ' (連続音/CVVC)' : ' (単独音/その他)';
-                const opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = `${c}${tag}`;
-                aliasSelect.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = c; opt.textContent = `${c}${tag}`; aliasSelect.appendChild(opt);
             });
         }
 
-        function closeBatchAliasModal() {
-            document.getElementById('batch-alias-modal').style.display = 'none';
-        }
+        function closeBatchAliasModal() { document.getElementById('batch-alias-modal').style.display = 'none'; }
 
         function applyBatchAlias() {
             const targetChar = document.getElementById('modal-char-select').value;
@@ -1229,9 +1164,7 @@
             const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
 
             phonemes.forEach((p, idx) => {
-                if (p.char === targetChar) {
-                    sentences[activeIndex].selectedAliases[idx] = targetAlias;
-                }
+                if (p.char === targetChar) sentences[activeIndex].selectedAliases[idx] = targetAlias;
             });
 
             renderDurationsEditor();
@@ -1243,62 +1176,121 @@
             const container = canvas.parentElement;
 
             const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
-            let offsets = sentences[activeIndex].pitchOffsets;
+            const totalPhonemes = phonemes.length;
 
-            if (offsets.length !== phonemes.length) {
-                sentences[activeIndex].pitchOffsets = new Array(phonemes.length).fill(0);
-                offsets = sentences[activeIndex].pitchOffsets;
+            if (totalPhonemes === 0) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
             }
 
-            const minColWidth = 55;
-            const calculatedWidth = phonemes.length * minColWidth;
+            const totalPoints = totalPhonemes * POINTS_PER_CHAR;
+            let pitchCurves = sentences[activeIndex].pitchCurves;
+
+            if (!pitchCurves || pitchCurves.length !== totalPoints) {
+                sentences[activeIndex].pitchCurves = new Array(totalPoints).fill(0);
+                pitchCurves = sentences[activeIndex].pitchCurves;
+            }
+
+            const minColWidth = 70;
+            const calculatedWidth = totalPhonemes * minColWidth;
             canvas.width = Math.max(container.clientWidth, calculatedWidth);
             canvas.height = container.clientHeight;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (phonemes.length === 0) return;
 
-            const colWidth = canvas.width / phonemes.length;
-            const points = [];
-            
-            const maxPitchStep = 12;
-            const pixelPerStep = (canvas.height / 2 - 20) / maxPitchStep;
+            const charWidth = canvas.width / totalPhonemes;
+            const stepX = canvas.width / (totalPoints - 1);
+            const centerY = canvas.height / 2;
+            const pixelPerStep = (canvas.height / 2 - 20) / MAX_PITCH_RANGE;
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 1;
+            for (let semitone = -MAX_PITCH_RANGE; semitone <= MAX_PITCH_RANGE; semitone += 1) {
+                if (semitone === 0) continue;
+                const y = centerY - (semitone * pixelPerStep);
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0, centerY); ctx.lineTo(canvas.width, centerY); ctx.stroke();
 
             phonemes.forEach((p, i) => {
-                const centerX = colWidth * i + colWidth / 2;
-                const centerY = canvas.height / 2 - (offsets[i] * pixelPerStep);
-                points.push({ x: centerX, y: centerY, startX: colWidth * i, width: colWidth, char: p.char, idx: i });
-            });
-
-            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-            ctx.beginPath(); ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2); ctx.stroke();
-
-            points.forEach(pt => {
-                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-                ctx.beginPath(); ctx.moveTo(pt.startX + pt.width, 0); ctx.lineTo(pt.startX + pt.width, canvas.height); ctx.stroke();
-            });
-
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#8c7ae6';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            points.forEach((pt, i) => {
-                if (i === 0) ctx.moveTo(pt.x, pt.y);
-                else {
-                    const prev = points[i - 1];
-                    const cx = (prev.x + pt.x) / 2;
-                    ctx.bezierCurveTo(cx, prev.y, cx, pt.y, pt.x, pt.y);
-                }
-            });
-            ctx.stroke();
-
-            points.forEach(pt => {
-                ctx.fillStyle = '#ffffff';
-                ctx.beginPath(); ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2); ctx.fill();
+                const startX = i * charWidth;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(startX, 0); ctx.lineTo(startX, canvas.height); ctx.stroke();
 
                 ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#a4b0be';
-                ctx.font = '11px sans-serif';
-                ctx.fillText(pt.char, pt.x - 4, canvas.height - 8);
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(p.char, startX + 8, canvas.height - 12);
             });
+
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#8c7ae6';
+
+            if (drawMode === 'curve') {
+                ctx.strokeStyle = primaryColor;
+                ctx.lineWidth = 3;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+
+                for (let i = 0; i < totalPoints - 1; i++) {
+                    const p0 = pitchCurves[Math.max(0, i - 1)];
+                    const p1 = pitchCurves[i];
+                    const p2 = pitchCurves[i + 1];
+                    const p3 = pitchCurves[Math.min(totalPoints - 1, i + 2)];
+
+                    const x1 = i * stepX;
+                    const x2 = (i + 1) * stepX;
+
+                    if (i === 0) ctx.moveTo(x1, centerY - (p1 * pixelPerStep));
+
+                    const steps = 6;
+                    for (let t = 1; t <= steps; t++) {
+                        const u = t / steps;
+                        const u2 = u * u;
+                        const u3 = u2 * u;
+
+                        const val = 0.5 * (
+                            (2 * p1) +
+                            (-p0 + p2) * u +
+                            (2 * p0 - 5 * p1 + 4 * p2 - p3) * u2 +
+                            (-p0 + 3 * p1 - 3 * p2 + p3) * u3
+                        );
+
+                        const currX = x1 + (x2 - x1) * u;
+                        const currY = centerY - (val * pixelPerStep);
+                        ctx.lineTo(currX, currY);
+                    }
+                }
+                ctx.stroke();
+            } else {
+                ctx.strokeStyle = primaryColor;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+
+                for (let i = 0; i < totalPoints; i++) {
+                    const x = i * stepX;
+                    const y = centerY - (pitchCurves[i] * pixelPerStep);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                for (let c = 0; c < totalPhonemes; c++) {
+                    const midIdx = c * POINTS_PER_CHAR + Math.floor(POINTS_PER_CHAR / 2);
+                    const x = midIdx * stepX;
+                    const y = centerY - (pitchCurves[midIdx] * pixelPerStep);
+                    ctx.fillStyle = primaryColor;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            }
         }
 
         function onCanvasPointerDown(e) {
@@ -1315,7 +1307,7 @@
 
             if (lastMousePos) {
                 const dist = Math.hypot(currentPos.x - lastMousePos.x, currentPos.y - lastMousePos.y);
-                const steps = Math.max(1, Math.floor(dist / 3));
+                const steps = Math.max(1, Math.floor(dist / 2));
                 for (let i = 1; i <= steps; i++) {
                     const interpX = lastMousePos.x + (currentPos.x - lastMousePos.x) * (i / steps);
                     const interpY = lastMousePos.y + (currentPos.y - lastMousePos.y) * (i / steps);
@@ -1328,26 +1320,45 @@
         }
 
         function handleCanvasInteraction(x, y) {
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
-            if (!phonemes.length) return;
+            const pitchCurves = sentences[activeIndex].pitchCurves;
+            if (!pitchCurves || pitchCurves.length === 0) return;
 
-            const colWidth = canvas.width / phonemes.length;
-            const targetIdx = Math.max(0, Math.min(phonemes.length - 1, Math.floor(x / colWidth)));
-
+            const totalPoints = pitchCurves.length;
+            const stepX = canvas.width / (totalPoints - 1);
             const centerY = canvas.height / 2;
-            const maxPitchStep = 12;
-            const pixelPerStep = (canvas.height / 2 - 20) / maxPitchStep;
-            
-            const pitchOffset = Math.round((centerY - y) / pixelPerStep);
-            sentences[activeIndex].pitchOffsets[targetIdx] = Math.max(-12, Math.min(12, pitchOffset));
+            const pixelPerStep = (canvas.height / 2 - 20) / MAX_PITCH_RANGE;
+
+            const targetIdx = Math.max(0, Math.min(totalPoints - 1, Math.round(x / stepX)));
+            const pitchOffset = (centerY - y) / pixelPerStep;
+            const clampedPitch = Math.max(-MAX_PITCH_RANGE, Math.min(MAX_PITCH_RANGE, pitchOffset));
+
+            if (drawMode === 'curve') {
+                const brushRadius = 8;
+                for (let offset = -brushRadius; offset <= brushRadius; offset++) {
+                    const idx = targetIdx + offset;
+                    if (idx >= 0 && idx < totalPoints) {
+                        const normDist = offset / (brushRadius + 1);
+                        const weight = Math.exp(-3 * normDist * normDist);
+                        pitchCurves[idx] = pitchCurves[idx] * (1 - weight) + clampedPitch * weight;
+                    }
+                }
+            } else {
+                const charIdx = Math.floor(targetIdx / POINTS_PER_CHAR);
+                const startIdx = charIdx * POINTS_PER_CHAR;
+                const endIdx = Math.min(totalPoints, startIdx + POINTS_PER_CHAR);
+                for (let i = startIdx; i < endIdx; i++) {
+                    pitchCurves[i] = clampedPitch;
+                }
+            }
 
             updateIntonationGraph();
         }
 
         function resetIntonation() {
-            sentences[activeIndex].pitchOffsets = [];
-            const defaultSpeed = sentences[activeIndex].params.speed;
             const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            sentences[activeIndex].pitchCurves = new Array(phonemes.length * POINTS_PER_CHAR).fill(0);
+            
+            const defaultSpeed = sentences[activeIndex].params.speed;
             sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
             sentences[activeIndex].selectedAliases = phonemes.map(p => p.alias);
 
@@ -1357,57 +1368,66 @@
 
         function applyPreset(type) {
             const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
-            const len = phonemes.length;
-            if (!len) return;
+            const totalPhonemes = phonemes.length;
+            if (!totalPhonemes) return;
 
-            sentences[activeIndex].pitchOffsets = new Array(len).fill(0);
+            const totalPoints = totalPhonemes * POINTS_PER_CHAR;
+            const curves = new Array(totalPoints).fill(0);
 
-            if (type === 'question') {
-                sentences[activeIndex].pitchOffsets[len - 1] = 4;
-                if (len > 1) sentences[activeIndex].pitchOffsets[len - 2] = 1;
-            } else if (type === 'exclaim') {
-                sentences[activeIndex].pitchOffsets[0] = 3;
-                sentences[activeIndex].pitchOffsets[len - 1] = -2;
+            for (let i = 0; i < totalPoints; i++) {
+                const progress = i / (totalPoints - 1);
+                if (type === 'question') {
+                    if (progress > 0.65) {
+                        curves[i] = Math.sin((progress - 0.65) / 0.35 * Math.PI / 2) * 3.5;
+                    }
+                } else if (type === 'exclaim') {
+                    curves[i] = Math.sin(progress * Math.PI) * 2.5;
+                }
             }
+
+            sentences[activeIndex].pitchCurves = curves;
             updateIntonationGraph();
         }
 
-        function schedulePhoneme(ctx, dest, sample, startTime, duration, opts, pitchOffset = 0, isRenketsu = false) {
+        function schedulePhoneme(ctx, dest, sample, startTime, duration, opts, pitchSubCurve = [], isRenketsu = false) {
             if (!sample || !sample.buffer) return;
 
+            const basePitch = opts.pitch;
             const src = ctx.createBufferSource();
             src.buffer = sample.buffer;
 
-            const speedRatio = 0.28 / Math.max(0.1, opts.speed);
-            const totalPitch = opts.pitch + (pitchOffset * 0.45);
-            const rate = Math.pow(2, totalPitch / 12) * Math.min(1.5, Math.max(0.7, speedRatio));
-            src.playbackRate.setValueAtTime(rate, startTime);
+            const baseRate = Math.pow(2, basePitch / 12);
+            src.playbackRate.setValueAtTime(baseRate, startTime);
 
-            let startOffset = sample.offset || 0;
+            if (pitchSubCurve && pitchSubCurve.length > 0) {
+                const subSteps = pitchSubCurve.length;
+                for (let i = 0; i < subSteps; i++) {
+                    const timeOffset = startTime + (duration * (i / subSteps));
+                    const currentPitchOffset = pitchSubCurve[i];
+                    const targetRate = Math.pow(2, (basePitch + currentPitchOffset) / 12);
+                    src.playbackRate.exponentialRampToValueAtTime(Math.max(0.1, targetRate), timeOffset + 0.005);
+                }
+            }
+
             let actualStartTime = startTime;
 
             if (isRenketsu && sample.preutter > 0) {
-                const effectivePreutter = sample.preutter / rate;
-                const effectiveOverlap = (sample.overlap > 0 ? sample.overlap : sample.preutter * 0.5) / rate;
-                
+                const effectivePreutter = sample.preutter / baseRate;
+                const effectiveOverlap = (sample.overlap > 0 ? sample.overlap : sample.preutter * 0.5) / baseRate;
                 actualStartTime = Math.max(0, startTime - effectivePreutter + effectiveOverlap);
             } else if (sample.preutter > 0) {
-                const effectivePreutter = sample.preutter / rate;
+                const effectivePreutter = sample.preutter / baseRate;
                 actualStartTime = Math.max(0, startTime - effectivePreutter * 0.3);
             }
 
-            let playLen = duration + (sample.overlap ? sample.overlap / rate : 0.05);
-            if (sample.cutoff > 0) {
-                const availBuf = sample.buffer.duration - startOffset - sample.cutoff;
-                if (availBuf > 0) playLen = Math.min(playLen, availBuf);
-            }
+            let playLen = duration + (sample.overlap ? sample.overlap / baseRate : 0.08);
 
             let lastNode = src;
 
             const smoothFilter = ctx.createBiquadFilter();
             smoothFilter.type = "lowpass";
-            const smoothFreq = 14000 - ((opts.smooth / 100) * 8500); 
-            smoothFilter.frequency.value = Math.max(1800, smoothFreq);
+            const smoothFreq = 16000 - ((opts.smooth / 100) * 10000); 
+            smoothFilter.frequency.value = Math.max(2000, smoothFreq);
             src.connect(smoothFilter);
             lastNode = smoothFilter;
 
@@ -1423,14 +1443,14 @@
             }
 
             const gain = ctx.createGain();
-            const attackTime = isRenketsu ? (0.02 + (opts.smooth / 100) * 0.02) : (0.005 + (opts.smooth / 100) * 0.015);
-            const releaseTime = 0.02 + (opts.smooth / 100) * 0.03;
+            const attackTime = isRenketsu ? (0.025 + (opts.smooth / 100) * 0.025) : (0.008 + (opts.smooth / 100) * 0.02);
+            const releaseTime = 0.03 + (opts.smooth / 100) * 0.04;
 
             gain.gain.setValueAtTime(0, actualStartTime);
 
             if (isRenketsu) {
-                const vFadeTime = Math.min(0.04, Math.max(0.015, (sample.preutter || 0.03) / rate));
-                gain.gain.linearRampToValueAtTime(opts.volume * 0.35, actualStartTime + vFadeTime);
+                const vFadeTime = Math.min(0.05, Math.max(0.02, (sample.preutter || 0.03) / baseRate));
+                gain.gain.linearRampToValueAtTime(opts.volume * 0.4, actualStartTime + vFadeTime);
                 gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime + vFadeTime);
             } else {
                 gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime);
@@ -1442,13 +1462,13 @@
             lastNode.connect(gain);
             gain.connect(dest);
 
-            src.start(actualStartTime, startOffset, Math.max(0.02, playLen));
+            const sampleOffset = sample.offset || 0;
+            src.start(actualStartTime, sampleOffset, Math.max(0.02, playLen));
         }
 
         async function speakAll() {
             initAudioContext();
             let currentTime = audioCtx.currentTime + 0.05;
-
             const targetSentences = (paramApplyMode === 'all') ? sentences : [sentences[activeIndex]];
 
             targetSentences.forEach(s => {
@@ -1461,10 +1481,13 @@
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
-                        const pOffset = s.pitchOffsets[charIdx] || 0;
                         const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
                         
-                        if (sample) schedulePhoneme(audioCtx, audioCtx.destination, sample, currentTime, charDuration, opts, pOffset, isRenketsu);
+                        const startPoint = charIdx * POINTS_PER_CHAR;
+                        const endPoint = startPoint + POINTS_PER_CHAR;
+                        const subCurve = (s.pitchCurves && s.pitchCurves.length >= endPoint) ? s.pitchCurves.slice(startPoint, endPoint) : [];
+
+                        if (sample) schedulePhoneme(audioCtx, audioCtx.destination, sample, currentTime, charDuration, opts, subCurve, isRenketsu);
                         
                         currentTime += charDuration;
                         charIdx++;
@@ -1512,10 +1535,13 @@
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
-                        const pOffset = s.pitchOffsets[charIdx] || 0;
                         const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
 
-                        if (sample) schedulePhoneme(offlineCtx, offlineCtx.destination, sample, currentTime, charDuration, opts, pOffset, isRenketsu);
+                        const startPoint = charIdx * POINTS_PER_CHAR;
+                        const endPoint = startPoint + POINTS_PER_CHAR;
+                        const subCurve = (s.pitchCurves && s.pitchCurves.length >= endPoint) ? s.pitchCurves.slice(startPoint, endPoint) : [];
+
+                        if (sample) schedulePhoneme(offlineCtx, offlineCtx.destination, sample, currentTime, charDuration, opts, subCurve, isRenketsu);
                         currentTime += charDuration;
                         charIdx++;
                     } else if (p.type === 'pause') {
