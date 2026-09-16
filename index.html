@@ -415,7 +415,6 @@
             <div class="terms-box">
                 <h4>🎙️ 基本的な使い方</h4>
                 <ul>
-                    <li><b>💻 PCでのご利用を推奨します:</b> スマートフォン等の画面サイズでは一部エディタやピッチ調整の操作が制限される場合があるため、パソコンからのご利用を推奨しております。</li>
                     <li><b>音源の選択:</b> 画面左側（スマホは「音源・スタイル」タブ）の「UTAU Zip音源を選択」枠をクリックし、UTAU音源のZipファイルを読み込んでください。</li>
                     <li><b>文章入力:</b> ひらがな・カタカナ・ローマ字入力に対応しています。入力すると自動的にひらがなに変換されます。</li>
                     <li><b>テキストファイル読み込み:</b> 「📄 読み込み」ボタンから<code>.txt</code>ファイルを読み込んで、文章を一括入力できます（1行ごとに1文として最大10文まで指定可能）。</li>
@@ -709,8 +708,7 @@
 
                 row.innerHTML = `
                     <div class="num">${idx + 1}</div>
-                    <input type="text" value="${s.text}" oninput="onInputTextChange(${idx}, this)">
-                    <button class="btn btn-secondary btn-sm btn-danger" onclick="removeSentence(${idx}, event)">×</button>
+                    <input type="text" value="${s.text}" oninput="onInputTextChange(${idx}, this)" onblur="onInputBlur(${idx}, this)">
                 `;
                 container.appendChild(row);
             });
@@ -721,17 +719,16 @@
         }
 
         function onInputTextChange(idx, inputElem) {
-            const cursorPosition = inputElem.selectionStart;
-            let val = inputElem.value;
-            let autoConverted = convertToHiragana(val);
+            sentences[idx].text = inputElem.value;
+            sentences[idx].selectedAliases = [];
+            updateIntonationGraph();
+            renderDurationsEditor();
+        }
 
+        function onInputBlur(idx, inputElem) {
+            let autoConverted = convertToHiragana(inputElem.value);
             sentences[idx].text = autoConverted;
-
-            if (val !== autoConverted) {
-                inputElem.value = autoConverted;
-                inputElem.setSelectionRange(cursorPosition, cursorPosition);
-            }
-
+            inputElem.value = autoConverted;
             sentences[idx].selectedAliases = [];
             updateIntonationGraph();
             renderDurationsEditor();
