@@ -207,7 +207,7 @@
         }
         .modal-card {
             background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: var(--radius-main);
-            width: 360px; max-width: 90%; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+            width: 480px; max-width: 92%; padding: 16px; display: flex; flex-direction: column; gap: 12px;
         }
         .modal-card h3 { margin: 0; font-size: 1.0em; color: var(--primary); }
         .modal-card label { font-size: 0.8em; color: var(--text-sub); font-weight: bold; }
@@ -215,10 +215,11 @@
 
         .terms-box {
             background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px;
-            padding: 10px; font-size: 0.8em; color: var(--text-main); line-height: 1.5; max-height: 220px; overflow-y: auto;
+            padding: 12px; font-size: 0.8em; color: var(--text-main); line-height: 1.6; max-height: 320px; overflow-y: auto;
         }
-        .terms-box ul { margin: 4px 0 0 0; padding-left: 18px; }
-        .terms-box li { margin-bottom: 6px; }
+        .terms-box h4 { margin: 8px 0 4px 0; color: var(--primary); font-size: 0.9em; border-bottom: 1px solid var(--border-color); padding-bottom: 2px; }
+        .terms-box ul { margin: 4px 0 8px 0; padding-left: 18px; }
+        .terms-box li { margin-bottom: 4px; }
 
         footer {
             height: 36px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
@@ -262,7 +263,7 @@
     <header>
         <h1>🎙️ Yuyu HANASU Studio</h1>
         <div class="header-actions">
-            <button class="btn btn-secondary btn-sm" onclick="openTermsModal()">ℹ️ 利用規約</button>
+            <button class="btn btn-secondary btn-sm" onclick="openTermsModal()">ℹ️ 利用規約・使い方</button>
             <select id="theme-select" onchange="changeTheme(this.value)">
                 <option value="dark">🌙</option>
                 <option value="light">☀️</option>
@@ -407,11 +408,28 @@
         </div>
     </div>
 
-    <!-- モーダル: サイトの注意事項・利用規約 -->
+    <!-- モーダル: サイトの使い方・注意事項・利用規約 -->
     <div class="modal-overlay" id="terms-modal">
         <div class="modal-card">
-            <h3>⚠️ ご利用にあたっての注意事項</h3>
+            <h3>📖 サイトの使い方 ＆ 利用規約</h3>
             <div class="terms-box">
+                <h4>🎙️ 基本的な使い方</h4>
+                <ul>
+                    <li><b>音源の選択:</b> 画面左側（スマホは「音源・スタイル」タブ）の「UTAU Zip音源を選択」枠をクリックし、UTAU音源のZipファイルを読み込んでください。</li>
+                    <li><b>文章入力:</b> ひらがな・カタカナ・ローマ字入力に対応しています。入力すると自動的にひらがなに変換されます。</li>
+                    <li><b>テキストファイル読み込み:</b> 「📄 読み込み」ボタンから<code>.txt</code>ファイルを読み込んで、文章を一括入力できます（1行ごとに1文として最大10文まで指定可能）。</li>
+                    <li><b>伸ばし棒（ー）:</b> 直前の母音を伸ばして発声します。（例: 「きー」→「きい」）</li>
+                    <li><b>句読点・スペース:</b> 読点「、」やスペースは短いポーズ、句点「。」「！」「？」は少し長めのポーズ（間）を挿入します。</li>
+                    <li><b>ブレス（呼吸音）の活用:</b> 文章内に <code>[br]</code> または <code>[息]</code> と入力すると、音源内にブレス素材がある場合に呼吸音を挿入できます。</li>
+                </ul>
+
+                <h4>🎛️ 音声の微調整・編集機能</h4>
+                <ul>
+                    <li><b>イントネーション:</b> 波形エリアをマウスや指でなぞることで、音節ごとのピッチ（高低）を自由に調整できます。</li>
+                    <li><b>音素長・エイリアス調整:</b> エディタ下部で文字ごとの長さ（秒数）を変更したり、単独音・連続音の切り替えが可能です。</li>
+                </ul>
+
+                <h4>⚠️ 利用規約・注意事項</h4>
                 <ul>
                     <li>当サイトの仕様（WEBブラウザ上での音声合成・加工および出力）に対する利用が許諾されているUTAU音源・音声ライブラリをご使用ください。</li>
                     <li>使用する音源の利用規約（キャラクター利用ガイドライン・二次創作規約等）を必ず遵守してください。</li>
@@ -420,7 +438,7 @@
                 </ul>
             </div>
             <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
-                <button class="btn btn-primary btn-sm" onclick="closeTermsModal()">同意して閉じる</button>
+                <button class="btn btn-primary btn-sm" onclick="closeTermsModal()">確認して閉じる</button>
             </div>
         </div>
     </div>
@@ -496,7 +514,7 @@
             setupResetListeners();
             setupDragValueListeners();
             
-            // 開いた瞬間に利用規約を表示
+            // 開いた瞬間に利用規約・使い方を表示
             openTermsModal();
 
             window.addEventListener('resize', () => {
@@ -630,6 +648,14 @@
             let i = 0;
             let lower = str.toLowerCase();
             while (i < lower.length) {
+                // ブレス記号 [br] や [息] は変換処理からスキップ
+                if (lower.startsWith('[br]', i)) {
+                    result += '[br]'; i += 4; continue;
+                }
+                if (str.startsWith('[息]', i)) {
+                    result += '[息]'; i += 3; continue;
+                }
+
                 let matched = false;
                 for (let len = 4; len >= 1; len--) {
                     if (i + len <= lower.length) {
@@ -907,6 +933,12 @@
                     voiceLibrary.samples[alias] = sampleObj;
                     if (voiceLibrary.styles[styleName]) voiceLibrary.styles[styleName].push(sampleObj);
 
+                    // ブレス音源の自動登録（br, 息, breath等）
+                    if (alias.match(/^(br|息|breath|panto)/i)) {
+                        voiceLibrary.samples['[br]'] = sampleObj;
+                        voiceLibrary.samples['[息]'] = sampleObj;
+                    }
+
                     const kanaMatch = alias.match(/[\u3040-\u309F\u30A0-\u30FF]+/);
                     if (kanaMatch) {
                         const kana = kataToHira(kanaMatch[0]);
@@ -923,6 +955,18 @@
             let lastKana = '';
 
             while (i < input.length) {
+                // ブレスタグ [br] または [息] の読み込み対応
+                if (input.startsWith('[br]', i)) {
+                    rawTokens.push({ type: 'breath', char: '[br]' });
+                    i += 4;
+                    continue;
+                }
+                if (input.startsWith('[息]', i)) {
+                    rawTokens.push({ type: 'breath', char: '[息]' });
+                    i += 3;
+                    continue;
+                }
+
                 let c = input[i];
                 if (["、", " ", " "].includes(c)) {
                     rawTokens.push({ type: 'pause', char: c, durFactor: 0.5 });
@@ -949,6 +993,13 @@
             let prevVowel = 'ー';
 
             rawTokens.forEach((tok) => {
+                if (tok.type === 'breath') {
+                    const breathAlias = findBreathAlias();
+                    result.push({ type: 'breath', char: tok.char, alias: breathAlias || tok.char });
+                    prevVowel = 'ー';
+                    return;
+                }
+
                 if (tok.type !== 'char' && tok.type !== 'extend') {
                     result.push(tok);
                     if (tok.type === 'pause') prevVowel = 'ー';
@@ -969,6 +1020,14 @@
             });
 
             return result;
+        }
+
+        function findBreathAlias() {
+            if (voiceLibrary.samples['[br]']) return '[br]';
+            if (voiceLibrary.samples['[息]']) return '[息]';
+            const keys = Object.keys(voiceLibrary.samples);
+            const found = keys.find(k => k.match(/^(br|息|breath|panto)/i));
+            return found || null;
         }
 
         function findBestAlias(char, prevVowel) {
@@ -1050,7 +1109,7 @@
             const container = document.getElementById('durations-editor');
             container.innerHTML = '';
 
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
             let durs = sentences[activeIndex].durSeconds;
             let selAliases = sentences[activeIndex].selectedAliases;
             const defaultSpeed = sentences[activeIndex].params.speed;
@@ -1105,7 +1164,7 @@
 
         function openBatchAliasModal() {
             const modal = document.getElementById('batch-alias-modal');
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
             
             const uniqueChars = Array.from(new Set(phonemes.map(p => p.char)));
             const charSelect = document.getElementById('modal-char-select');
@@ -1149,7 +1208,7 @@
         function applyBatchAlias() {
             const targetChar = document.getElementById('modal-char-select').value;
             const targetAlias = document.getElementById('modal-alias-select').value;
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
 
             phonemes.forEach((p, idx) => {
                 if (p.char === targetChar) {
@@ -1165,7 +1224,7 @@
             if (!canvas) return;
             const container = canvas.parentElement;
 
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
             let offsets = sentences[activeIndex].pitchOffsets;
 
             if (offsets.length !== phonemes.length) {
@@ -1251,7 +1310,7 @@
         }
 
         function handleCanvasInteraction(x, y) {
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
             if (!phonemes.length) return;
 
             const colWidth = canvas.width / phonemes.length;
@@ -1270,7 +1329,7 @@
         function resetIntonation() {
             sentences[activeIndex].pitchOffsets = [];
             const defaultSpeed = sentences[activeIndex].params.speed;
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
             sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
             sentences[activeIndex].selectedAliases = phonemes.map(p => p.alias);
 
@@ -1279,7 +1338,7 @@
         }
 
         function applyPreset(type) {
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
             const len = phonemes.length;
             if (!len) return;
 
@@ -1380,7 +1439,7 @@
                 let charIdx = 0;
 
                 phonemes.forEach(p => {
-                    if (p.type === 'char' || p.type === 'extend') {
+                    if (p.type === 'char' || p.type === 'extend' || p.type === 'breath') {
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
@@ -1412,7 +1471,7 @@
                 const opts = s.params;
                 let cIdx = 0;
                 phonemes.forEach(p => {
-                    if (p.type === 'char' || p.type === 'extend') {
+                    if (p.type === 'char' || p.type === 'extend' || p.type === 'breath') {
                         const d = (s.durSeconds && s.durSeconds[cIdx]) ? s.durSeconds[cIdx] : opts.speed;
                         totalDur += d;
                         cIdx++;
@@ -1431,7 +1490,7 @@
                 let charIdx = 0;
 
                 phonemes.forEach(p => {
-                    if (p.type === 'char' || p.type === 'extend') {
+                    if (p.type === 'char' || p.type === 'extend' || p.type === 'breath') {
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
