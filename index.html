@@ -421,7 +421,7 @@
                     <li><b>音源の選択:</b> 画面左側（スマホは「音源・スタイル」タブ）の「UTAU Zip音源を選択」枠をクリックし、UTAU音源のZipファイルを読み込んでください。</li>
                     <li><b>文章入力:</b> ひらがな・カタカナ・ローマ字入力に対応しています。入力すると自動的にひらがなに変換されます。</li>
                     <li><b>テキストファイル読み込み:</b> 「📄 読み込み」ボタンから<code>.txt</code>ファイルを読み込んで、文章を一括入力できます（最大10文）。</li>
-                    <li><b>伸ばし棒（ー）:</b> 直前の母音を伸ばして発声します。</li>
+                    <li><b>伸ばし棒（ー）:</b> 直前の音素の発声時間を伸ばします。</li>
                     <li><b>句読点・スペース:</b> 読点「、」やスペースは短いポーズ、句点「。」「！」「？」は少し長めのポーズを挿入します。</li>
                     <li><b>ブレスの活用:</b> 文章内に <code>br</code> や <code>[br]</code>、<code>息</code> や <code>[息]</code> と入力すると呼吸音を挿入できます。</li>
                 </ul>
@@ -496,12 +496,12 @@
         };
 
         const vowelMap = {
-            'あ':'a','か':'a','さ':'a','た':'a','な':'a','は':'a','ま':'a','や':'a','ら':'a','わ':'a','が':'a','ざ':'a','だ':'a','ば':'a','ぱ':'a','きゃ':'a','しゃ':'a','ちゃ':'a','にゃ':'a','ひゃ':'a','みゃ':'a','りゃ':'a','ぎゃ':'a','じゃ':'a','びゃ':'a','ぴゃ':'a',
-            'い':'i','き':'i','し':'i','ち':'i','に':'i','ひ':'i','み':'i','り':'i','ぎ':'i','じ':'i','ぢ':'i','び':'i','ぴ':'i',
-            'う':'u','く':'u','す':'u','つ':'u','ぬ':'u','ふ':'u','む':'u','ゆ':'u','る':'u','ぐ':'u','ず':'u','づ':'u','ぶ':'u','ぷ':'u','きゅ':'u','しゅ':'u','ちゅ':'u','にゅ':'u','ひゅ':'u','みゅ':'u','りゅ':'u','ぎゅ':'u','じゅ':'u','びゅ':'u','ぴゅ':'u',
-            'え':'e','け':'e','せ':'e','て':'e','ね':'e','へ':'e','め':'e','れ':'e','げ':'e','ぜ':'e','で':'e','べ':'e','ぺ':'e',
-            'お':'o','こ':'o','そ':'o','と':'o','の':'o','ほ':'o','も':'o','よ':'o','ろ':'o','を':'o','ご':'o','ぞ':'o','ど':'o','ぼ':'o','ぽ':'o','きょ':'o','しょ':'o','ちょ':'o','にょ':'o','ひょ':'o','みょ':'o','りょ':'o','ぎょ':'o','じょ':'o','びょ':'o','ぴょ':'o',
-            'ん':'n'
+            'あ':'あ','か':'あ','さ':'あ','た':'あ','な':'あ','は':'あ','ま':'あ','や':'あ','ら':'あ','わ':'あ','が':'あ','ざ':'あ','だ':'あ','ば':'あ','ぱ':'あ','きゃ':'あ','しゃ':'あ','ちゃ':'あ','にゃ':'あ','ひゃ':'あ','みゃ':'あ','りゃ':'あ','ぎゃ':'あ','じゃ':'あ','びゃ':'あ','ぴゃ':'あ',
+            'い':'い','き':'い','し':'い','ち':'い','に':'い','ひ':'い','み':'い','り':'い','ぎ':'い','じ':'い','ぢ':'い','び':'い','ぴ':'い',
+            'う':'う','く':'う','す':'う','つ':'う','ぬ':'う','ふ':'う','む':'う','ゆ':'う','る':'う','ぐ':'う','ず':'う','づ':'う','ぶ':'う','ぷ':'う','きゅ':'う','しゅ':'う','ちゅ':'う','にゅ':'う','ひゅ':'う','みゅ':'う','りゅ':'う','ぎゅ':'う','じゅ':'う','びゅ':'う','ぴゅ':'う',
+            'え':'え','け':'え','せ':'え','て':'え','ね':'え','へ':'え','め':'え','れ':'え','げ':'え','ぜ':'え','で':'え','べ':'え','ぺ':'え',
+            'お':'お','こ':'お','そ':'お','と':'お','の':'お','ほ':'お','も':'お','よ':'お','ろ':'お','を':'お','ご':'お','ぞ':'お','ど':'お','ぼ':'お','ぽ':'お','きょ':'お','しょ':'お','ちょ':'お','にょ':'お','ひょ':'お','みょ':'お','りょ':'お','ぎょ':'お','じょ':'お','びょ':'お','ぴょ':'お',
+            'ん':'ん'
         };
 
         const defaultParams = { speed: 0.28, pitch: 0, smooth: 50, tone: 0, volume: 1.0 };
@@ -933,7 +933,6 @@
             let input = convertToHiragana(text);
             let rawTokens = [];
             let i = 0;
-            let lastKana = '';
 
             while (i < input.length) {
                 if (input.startsWith('[br]', i)) { rawTokens.push({ type: 'breath', char: '[br]' }); i += 4; continue; }
@@ -945,8 +944,11 @@
                 } else if (["。", "!", "！", "?", "？", "\n"].includes(c)) {
                     rawTokens.push({ type: 'pause', char: c, durFactor: 1.0 });
                 } else if (c === 'ー') {
-                    const extVowel = vowelMap[lastKana] || 'あ';
-                    rawTokens.push({ type: 'extend', char: extVowel });
+                    // 伸ばし棒の場合は新しく音素を追加せず、直前の音素の倍率を加算して伸ばす
+                    if (rawTokens.length > 0) {
+                        let prevToken = rawTokens[rawTokens.length - 1];
+                        prevToken.durFactor = (prevToken.durFactor || 1.0) + 1.0;
+                    }
                 } else if (c === 'っ') {
                     rawTokens.push({ type: 'sokuon', char: 'っ' });
                 } else {
@@ -955,8 +957,7 @@
                         combined += input[i+1];
                         i++;
                     }
-                    rawTokens.push({ type: 'char', char: combined });
-                    lastKana = combined;
+                    rawTokens.push({ type: 'char', char: combined, durFactor: 1.0 });
                 }
                 i++;
             }
@@ -967,22 +968,22 @@
             rawTokens.forEach((tok) => {
                 if (tok.type === 'breath') {
                     const breathAlias = findBreathAlias();
-                    result.push({ type: 'breath', char: tok.char, alias: breathAlias || tok.char });
+                    result.push({ type: 'breath', char: tok.char, alias: breathAlias || tok.char, durFactor: tok.durFactor || 1.0 });
                     prevVowel = 'ー';
                     return;
                 }
 
-                if (tok.type !== 'char' && tok.type !== 'extend') {
+                if (tok.type !== 'char') {
                     result.push(tok);
                     if (tok.type === 'pause') prevVowel = 'ー';
                     return;
                 }
 
                 const currChar = tok.char;
-                const currVowel = vowelMap[currChar] || 'a';
+                const currVowel = vowelMap[currChar] || 'あ';
                 let matchedAlias = findBestAlias(currChar, prevVowel);
 
-                result.push({ type: tok.type, char: currChar, alias: matchedAlias || currChar });
+                result.push({ type: tok.type, char: currChar, alias: matchedAlias || currChar, durFactor: tok.durFactor || 1.0 });
                 prevVowel = currVowel;
             });
 
@@ -1018,7 +1019,7 @@
             const matchedKey = keys.find(k => k === renketsu || k.endsWith(' ' + char) || k.endsWith('_' + char) || k.startsWith(char));
             if (matchedKey) return matchedKey;
 
-            const prefixes = ['_', '- ', 'a ', 'i ', 'u ', 'e ', 'o ', 'n '];
+            const prefixes = ['_', '- ', 'あ ', 'い ', 'う ', 'え ', 'お ', 'ん '];
             for (let p of prefixes) {
                 if (voiceLibrary.samples[p + char]) return p + char;
             }
@@ -1075,13 +1076,13 @@
             const container = document.getElementById('durations-editor');
             container.innerHTML = '';
 
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'breath');
             let durs = sentences[activeIndex].durSeconds;
             let selAliases = sentences[activeIndex].selectedAliases;
             const defaultSpeed = sentences[activeIndex].params.speed;
 
             if (!durs || durs.length !== phonemes.length) {
-                sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
+                sentences[activeIndex].durSeconds = phonemes.map(p => defaultSpeed * (p.durFactor || 1.0));
                 durs = sentences[activeIndex].durSeconds;
             }
             if (!selAliases || selAliases.length !== phonemes.length || selAliases.includes(undefined)) {
@@ -1113,7 +1114,7 @@
                 item.innerHTML = `
                     <label>${p.char}</label>
                     ${selectHtml}
-                    <input type="number" step="0.01" min="0.05" max="2.00" value="${durs[i].toFixed(2)}" oninput="updateDurationValue(${i}, this.value)">
+                    <input type="number" step="0.01" min="0.05" max="4.00" value="${durs[i].toFixed(2)}" oninput="updateDurationValue(${i}, this.value)">
                 `;
                 container.appendChild(item);
             });
@@ -1121,7 +1122,7 @@
 
         function updateDurationValue(idx, val) {
             const num = parseFloat(val) || 0.1;
-            sentences[activeIndex].durSeconds[idx] = Math.max(0.05, Math.min(2.0, num));
+            sentences[activeIndex].durSeconds[idx] = Math.max(0.05, Math.min(4.0, num));
         }
 
         function updateAliasValue(idx, val) {
@@ -1130,7 +1131,7 @@
 
         function openBatchAliasModal() {
             const modal = document.getElementById('batch-alias-modal');
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'breath');
             
             const uniqueChars = Array.from(new Set(phonemes.map(p => p.char)));
             const charSelect = document.getElementById('modal-char-select');
@@ -1161,7 +1162,7 @@
         function applyBatchAlias() {
             const targetChar = document.getElementById('modal-char-select').value;
             const targetAlias = document.getElementById('modal-alias-select').value;
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'breath');
 
             phonemes.forEach((p, idx) => {
                 if (p.char === targetChar) sentences[activeIndex].selectedAliases[idx] = targetAlias;
@@ -1175,7 +1176,7 @@
             if (!canvas) return;
             const container = canvas.parentElement;
 
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'breath');
             const totalPhonemes = phonemes.length;
 
             if (totalPhonemes === 0) {
@@ -1355,11 +1356,11 @@
         }
 
         function resetIntonation() {
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'breath');
             sentences[activeIndex].pitchCurves = new Array(phonemes.length * POINTS_PER_CHAR).fill(0);
             
             const defaultSpeed = sentences[activeIndex].params.speed;
-            sentences[activeIndex].durSeconds = new Array(phonemes.length).fill(defaultSpeed);
+            sentences[activeIndex].durSeconds = phonemes.map(p => defaultSpeed * (p.durFactor || 1.0));
             sentences[activeIndex].selectedAliases = phonemes.map(p => p.alias);
 
             updateIntonationGraph();
@@ -1367,7 +1368,7 @@
         }
 
         function applyPreset(type) {
-            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'extend' || p.type === 'breath');
+            const phonemes = parseTextToPhonemes(sentences[activeIndex].text).filter(p => p.type === 'char' || p.type === 'breath');
             const totalPhonemes = phonemes.length;
             if (!totalPhonemes) return;
 
@@ -1477,8 +1478,9 @@
                 let charIdx = 0;
 
                 phonemes.forEach(p => {
-                    if (p.type === 'char' || p.type === 'extend' || p.type === 'breath') {
-                        const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
+                    if (p.type === 'char' || p.type === 'breath') {
+                        const baseDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : (opts.speed * (p.durFactor || 1.0));
+                        const charDuration = baseDuration;
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
                         const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
@@ -1512,8 +1514,8 @@
                 const opts = s.params;
                 let cIdx = 0;
                 phonemes.forEach(p => {
-                    if (p.type === 'char' || p.type === 'extend' || p.type === 'breath') {
-                        const d = (s.durSeconds && s.durSeconds[cIdx]) ? s.durSeconds[cIdx] : opts.speed;
+                    if (p.type === 'char' || p.type === 'breath') {
+                        const d = (s.durSeconds && s.durSeconds[cIdx]) ? s.durSeconds[cIdx] : (opts.speed * (p.durFactor || 1.0));
                         totalDur += d;
                         cIdx++;
                     } else if (p.type === 'pause') totalDur += opts.speed * (p.durFactor || 0.8);
@@ -1531,8 +1533,8 @@
                 let charIdx = 0;
 
                 phonemes.forEach(p => {
-                    if (p.type === 'char' || p.type === 'extend' || p.type === 'breath') {
-                        const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : opts.speed;
+                    if (p.type === 'char' || p.type === 'breath') {
+                        const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : (opts.speed * (p.durFactor || 1.0));
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
                         const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
