@@ -157,17 +157,17 @@
             -webkit-overflow-scrolling: touch;
         }
         .duration-item {
-            display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.8em; min-width: 110px; flex-shrink: 0;
-            background: var(--bg-base); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color);
+            display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 0.8em; min-width: 130px; flex-shrink: 0;
+            background: var(--bg-base); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);
         }
-        .duration-item label { color: var(--text-sub); font-weight: bold; }
+        .duration-item label { color: var(--primary); font-weight: bold; font-size: 1.0em; }
         .duration-item input[type="number"] {
             width: 100%; text-align: center; background: var(--bg-card); border: 1px solid var(--border-color);
-            color: var(--primary); border-radius: 6px; padding: 4px 2px; font-weight: bold; font-size: 0.85em; outline: none;
+            color: var(--primary); border-radius: 6px; padding: 6px 4px; font-weight: bold; font-size: 0.9em; outline: none;
         }
         .duration-item select {
             width: 100%; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color);
-            border-radius: 4px; font-size: 0.72em; padding: 2px; outline: none;
+            border-radius: 6px; font-size: 0.78em; padding: 5px; outline: none; text-overflow: ellipsis;
         }
 
         .params-card {
@@ -179,7 +179,7 @@
         }
         .param-group { display: flex; flex-direction: column; gap: 4px; font-size: 0.8em; }
         .param-group label { display: flex; justify-content: space-between; font-weight: bold; color: var(--text-sub); }
-        .param-group label span { color: var(--primary); }
+        .param-group label span { color: var(--primary); cursor: pointer; user-select: none; padding: 2px 4px; border-radius: 4px; background: rgba(140, 122, 230, 0.1); }
         input[type="range"] { accent-color: var(--primary); width: 100%; cursor: pointer; height: 28px; }
 
         .mode-toggle { display: flex; gap: 12px; align-items: center; font-size: 0.8em; color: var(--text-sub); flex-wrap: wrap; }
@@ -237,6 +237,7 @@
             .btn-sm { padding: 6px 10px; font-size: 0.8em; }
             .sentence-row { padding: 4px 6px; }
             .sentence-row input[type="text"] { padding: 8px; }
+            .duration-item { min-width: 120px; padding: 6px; }
         }
     </style>
 </head>
@@ -271,7 +272,7 @@
             <div class="file-select-btn" onclick="document.getElementById('file-input').click()">
                 <div style="font-size: 1.4em;">📦</div>
                 <div style="font-size: 0.85em;">UTAU Zip音源を選択</div>
-                <p>単音 / 連続音 / CVVC / 表情音源対応</p>
+                <p>単独音 / 連続音 / CVVC / 表情音源対応</p>
                 <input type="file" id="file-input" accept=".zip" style="display:none;" onchange="handleFileSelect(event)">
             </div>
 
@@ -292,7 +293,7 @@
             </div>
 
             <div class="phoneme-section">
-                <div style="font-size: 0.75em; font-weight: bold; color: var(--text-sub);">登録音素・エイリアス一覧:</div>
+                <div style="font-size: 0.85em; font-weight: bold; color: var(--text-sub);">登録音素・エイリアス一覧:</div>
                 <div class="phoneme-grid" id="phoneme-grid"></div>
             </div>
         </div>
@@ -341,23 +342,23 @@
                 </div>
                 <div class="params-grid">
                     <div class="param-group">
-                        <label>話す速度 <span id="val-speed" ondblclick="resetParam('speed')">0.28s</span></label>
+                        <label>話す速度 <span id="val-speed" class="resetable-val">0.28s</span></label>
                         <input type="range" id="param-speed" min="0.10" max="0.60" step="0.01" value="0.28" oninput="updateParam('speed', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>基本ピッチ <span id="val-pitch" ondblclick="resetParam('pitch')">0</span></label>
+                        <label>基本ピッチ <span id="val-pitch" class="resetable-val">0</span></label>
                         <input type="range" id="param-pitch" min="-12" max="12" step="1" value="0" oninput="updateParam('pitch', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>なめらかさ <span id="val-smooth" ondblclick="resetParam('smooth')">40%</span></label>
+                        <label>なめらかさ <span id="val-smooth" class="resetable-val">40%</span></label>
                         <input type="range" id="param-smooth" min="0" max="100" step="5" value="40" oninput="updateParam('smooth', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>トーン <span id="val-tone" ondblclick="resetParam('tone')">0</span></label>
+                        <label>トーン <span id="val-tone" class="resetable-val">0</span></label>
                         <input type="range" id="param-tone" min="-10" max="10" step="1" value="0" oninput="updateParam('tone', this.value)">
                     </div>
                     <div class="param-group">
-                        <label>音量 <span id="val-volume" ondblclick="resetParam('volume')">1.0</span></label>
+                        <label>音量 <span id="val-volume" class="resetable-val">1.0</span></label>
                         <input type="range" id="param-volume" min="0.1" max="1.5" step="0.05" value="1.0" oninput="updateParam('volume', this.value)">
                     </div>
                 </div>
@@ -458,10 +459,32 @@
         window.addEventListener('DOMContentLoaded', () => {
             initCanvas();
             renderSentences();
+            setupResetListeners();
             window.addEventListener('resize', () => {
                 updateIntonationGraph();
             });
         });
+
+        function setupResetListeners() {
+            const keys = ['speed', 'pitch', 'smooth', 'tone', 'volume'];
+            keys.forEach(key => {
+                const el = document.getElementById(`val-${key}`);
+                if (!el) return;
+
+                el.addEventListener('dblclick', () => resetParam(key));
+
+                let lastTap = 0;
+                el.addEventListener('touchend', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    if (tapLength < 300 && tapLength > 0) {
+                        resetParam(key);
+                        e.preventDefault();
+                    }
+                    lastTap = currentTime;
+                });
+            });
+        }
 
         function switchMobileTab(tab) {
             const sideBtn = document.getElementById('tab-btn-side');
@@ -1185,15 +1208,17 @@
             let startOffset = sample.offset || 0;
             let actualStartTime = startTime;
 
-            if (sample.preutter > 0) {
+            if (isRenketsu && sample.preutter > 0) {
                 const effectivePreutter = sample.preutter / rate;
-                const effectiveOverlap = (sample.overlap || 0) / rate;
+                const effectiveOverlap = (sample.overlap > 0 ? sample.overlap : sample.preutter * 0.5) / rate;
                 
-                actualStartTime = Math.max(0, startTime - effectiveOverlap);
-                startOffset += Math.max(0, sample.preutter - sample.overlap);
+                actualStartTime = Math.max(0, startTime - effectivePreutter + effectiveOverlap);
+            } else if (sample.preutter > 0) {
+                const effectivePreutter = sample.preutter / rate;
+                actualStartTime = Math.max(0, startTime - effectivePreutter * 0.3);
             }
 
-            let playLen = duration + (sample.overlap ? sample.overlap / rate : 0.02);
+            let playLen = duration + (sample.overlap ? sample.overlap / rate : 0.05);
             if (sample.cutoff > 0) {
                 const availBuf = sample.buffer.duration - startOffset - sample.cutoff;
                 if (availBuf > 0) playLen = Math.min(playLen, availBuf);
@@ -1220,11 +1245,20 @@
             }
 
             const gain = ctx.createGain();
-            const attackTime = (sample.overlap > 0) ? Math.min(0.03, sample.overlap / rate) : (0.005 + (opts.smooth / 100) * 0.015); 
-            const releaseTime = 0.015 + (opts.smooth / 100) * 0.025;
+            const attackTime = isRenketsu ? (0.02 + (opts.smooth / 100) * 0.02) : (0.005 + (opts.smooth / 100) * 0.015);
+            const releaseTime = 0.02 + (opts.smooth / 100) * 0.03;
 
             gain.gain.setValueAtTime(0, actualStartTime);
-            gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime);
+
+            if (isRenketsu) {
+                // 連続音・CVVC時の前の母音（立ち上がり部分）を小さく抑えて自然にアタックへと繋げる
+                const vFadeTime = Math.min(0.04, Math.max(0.015, (sample.preutter || 0.03) / rate));
+                gain.gain.linearRampToValueAtTime(opts.volume * 0.35, actualStartTime + vFadeTime);
+                gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime + vFadeTime);
+            } else {
+                gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime);
+            }
+
             gain.gain.setValueAtTime(opts.volume, actualStartTime + Math.max(attackTime, playLen - releaseTime));
             gain.gain.linearRampToValueAtTime(0, actualStartTime + playLen);
 
