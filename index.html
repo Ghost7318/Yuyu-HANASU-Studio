@@ -220,8 +220,20 @@
         .terms-box li { margin-bottom: 4px; }
 
         footer {
-            height: 36px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: center; font-size: 0.75em; color: var(--text-sub); flex-shrink: 0; gap: 8px; width: 100%;
+            height: auto;
+            min-height: 48px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            color: var(--text-sub);
+            flex-shrink: 0;
+            gap: 4px;
+            width: 100%;
+            padding: 6px 0;
         }
         footer a { color: var(--primary); text-decoration: none; font-weight: bold; }
 
@@ -254,7 +266,7 @@
             .duration-item select { font-size: 0.85em; padding: 6px 4px; }
             .duration-item input[type="number"] { font-size: 0.95em; padding: 6px 4px; }
 
-            footer { height: 44px; flex-direction: column; gap: 2px; padding: 4px 0; font-size: 0.68em; }
+            footer { font-size: 0.68em; padding: 6px 0; }
         }
     </style>
 </head>
@@ -305,7 +317,7 @@
             <div class="style-selector-card">
                 <label>🎭 音源スタイル・方式一括切替</label>
                 <select id="style-select" onchange="onStyleChange(this.value)">
-                    <option value="auto">🤖 自動選択（推奨）</option>
+                    <option value="auto">🤖 自動選択（単独音優先・はっきり）</option>
                 </select>
             </div>
 
@@ -495,21 +507,12 @@
             'a':'あ','i':'い','u':'う','e':'え','o':'お'
         };
 
-        const vowelMap = {
-            'あ':'あ','か':'あ','さ':'あ','た':'あ','な':'あ','は':'あ','ま':'あ','や':'あ','ら':'あ','わ':'あ','が':'あ','ざ':'あ','だ':'あ','ば':'あ','ぱ':'あ','きゃ':'あ','しゃ':'あ','ちゃ':'あ','にゃ':'あ','ひゃ':'あ','みゃ':'あ','りゃ':'あ','ぎゃ':'あ','じゃ':'あ','びゃ':'あ','ぴゃ':'あ',
-            'い':'い','き':'い','し':'い','ち':'い','に':'い','ひ':'い','み':'い','り':'い','ぎ':'い','じ':'い','ぢ':'い','び':'い','ぴ':'い',
-            'う':'う','く':'う','す':'う','つ':'う','ぬ':'う','ふ':'う','む':'う','ゆ':'う','る':'う','ぐ':'う','ず':'う','づ':'う','ぶ':'う','ぷ':'う','きゅ':'う','しゅ':'う','ちゅ':'う','にゅ':'う','ひゅ':'う','みゅ':'う','りゅ':'う','ぎゅ':'う','じゅ':'う','びゅ':'う','ぴゅ':'う',
-            'え':'え','け':'え','せ':'え','て':'え','ね':'え','へ':'え','め':'え','れ':'え','げ':'え','ぜ':'え','で':'え','べ':'え','ぺ':'え',
-            'お':'お','こ':'お','そ':'お','と':'お','の':'お','ほ':'お','も':'お','よ':'お','ろ':'お','を':'お','ご':'お','ぞ':'お','ど':'お','ぼ':'お','ぽ':'お','きょ':'お','しょ':'お','ちょ':'お','にょ':'お','ひょ':'お','みょ':'お','りょ':'お','ぎょ':'お','じょ':'お','びょ':'お','ぴょ':'お',
-            'ん':'ん'
-        };
-
         const defaultParams = { speed: 0.28, pitch: 0, smooth: 50, tone: 0, volume: 1.0 };
         const POINTS_PER_CHAR = 32; 
         const MAX_PITCH_RANGE = 6;
 
         let sentences = [
-            { text: "こんにちわ", params: { ...defaultParams }, pitchCurves: [], durSeconds: [], selectedAliases: [] }
+            { text: "あいうえお", params: { ...defaultParams }, pitchCurves: [], durSeconds: [], selectedAliases: [] }
         ];
         let activeIndex = 0;
         let paramApplyMode = 'single';
@@ -840,15 +843,14 @@
 
         function updateStyleDropdown() {
             const select = document.getElementById('style-select');
-            select.innerHTML = '<option value="auto">🤖 自動判定 (一番自然な設定)</option>';
+            select.innerHTML = '<option value="auto">🤖 自動判定 (単独音優先・はっきり)</option>';
             
             Object.keys(voiceLibrary.styles).forEach(st => {
-                const opt = document.createElement('option');
-                opt.value = st; opt.textContent = `✨ ${st}`; select.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = st; opt.textContent = `✨ ${st}`; select.appendChild(opt);
             });
             
+            const optTando = document.createElement('option'); optTando.value = "mode_tandoku"; optTando.textContent = "⚙️ 単独音優先 (滑舌重視)"; select.appendChild(optTando);
             const optRen = document.createElement('option'); optRen.value = "mode_renketsu"; optRen.textContent = "⚙️ 連続音優先"; select.appendChild(optRen);
-            const optTando = document.createElement('option'); optTando.value = "mode_tandoku"; optTando.textContent = "⚙️ 単独音優先"; select.appendChild(optTando);
         }
 
         function onStyleChange(val) {
@@ -919,12 +921,6 @@
                         voiceLibrary.samples['[br]'] = sampleObj;
                         voiceLibrary.samples['[息]'] = sampleObj;
                     }
-
-                    const kanaMatch = alias.match(/[\u3040-\u309F\u30A0-\u30FF]+/);
-                    if (kanaMatch) {
-                        const kana = kataToHira(kanaMatch[0]);
-                        if (!voiceLibrary.samples[kana]) voiceLibrary.samples[kana] = sampleObj;
-                    }
                 }
             });
         }
@@ -944,10 +940,11 @@
                 } else if (["。", "!", "！", "?", "？", "\n"].includes(c)) {
                     rawTokens.push({ type: 'pause', char: c, durFactor: 1.0 });
                 } else if (c === 'ー') {
-                    // 伸ばし棒の場合は新しく音素を追加せず、直前の音素の倍率を加算して伸ばす
                     if (rawTokens.length > 0) {
                         let prevToken = rawTokens[rawTokens.length - 1];
-                        prevToken.durFactor = (prevToken.durFactor || 1.0) + 1.0;
+                        if (prevToken.type === 'char' || prevToken.type === 'breath') {
+                            prevToken.durFactor = (prevToken.durFactor || 1.0) + 1.0;
+                        }
                     }
                 } else if (c === 'っ') {
                     rawTokens.push({ type: 'sokuon', char: 'っ' });
@@ -963,28 +960,23 @@
             }
 
             let result = [];
-            let prevVowel = 'ー';
 
             rawTokens.forEach((tok) => {
                 if (tok.type === 'breath') {
                     const breathAlias = findBreathAlias();
                     result.push({ type: 'breath', char: tok.char, alias: breathAlias || tok.char, durFactor: tok.durFactor || 1.0 });
-                    prevVowel = 'ー';
                     return;
                 }
 
                 if (tok.type !== 'char') {
                     result.push(tok);
-                    if (tok.type === 'pause') prevVowel = 'ー';
                     return;
                 }
 
                 const currChar = tok.char;
-                const currVowel = vowelMap[currChar] || 'あ';
-                let matchedAlias = findBestAlias(currChar, prevVowel);
+                let matchedAlias = findBestAlias(currChar);
 
                 result.push({ type: tok.type, char: currChar, alias: matchedAlias || currChar, durFactor: tok.durFactor || 1.0 });
-                prevVowel = currVowel;
             });
 
             return result;
@@ -997,32 +989,36 @@
             return keys.find(k => k.match(/^(br|息|breath|panto)/i)) || null;
         }
 
-        function findBestAlias(char, prevVowel) {
-            const renketsu = (prevVowel === 'ー') ? `- ${char}` : `${prevVowel} ${char}`;
-            const cvvc = (prevVowel !== 'ー') ? `${prevVowel} ${char.charAt(0)}` : null;
+        function findBestAlias(char) {
+            const candidates = [];
 
-            if (currentSelectedStyle === "mode_tandoku") {
-                if (voiceLibrary.samples[char]) return char;
-            } else if (currentSelectedStyle === "mode_renketsu") {
-                if (voiceLibrary.samples[renketsu]) return renketsu;
-            } else if (currentSelectedStyle !== "auto" && voiceLibrary.styles[currentSelectedStyle]) {
-                const targetStyleSamples = voiceLibrary.styles[currentSelectedStyle];
-                const foundInStyle = targetStyleSamples.find(s => s.alias === renketsu || s.alias === char || s.alias.endsWith(' ' + char) || (cvvc && s.alias === cvvc));
-                if (foundInStyle) return foundInStyle.alias;
+            // 単独音素を最優先で探索（母音引き継ぎ・二重発音を防ぐ）
+            candidates.push(char);
+            candidates.push(`- ${char}`);
+            candidates.push(`-_${char}`);
+
+            if (currentSelectedStyle === "mode_renketsu") {
+                candidates.reverse();
             }
 
-            if (voiceLibrary.samples[renketsu]) return renketsu;
-            if (cvvc && voiceLibrary.samples[cvvc]) return cvvc;
-            if (voiceLibrary.samples[char]) return char;
+            if (currentSelectedStyle !== "auto" && currentSelectedStyle !== "mode_tandoku" && currentSelectedStyle !== "mode_renketsu" && voiceLibrary.styles[currentSelectedStyle]) {
+                const targetStyleSamples = voiceLibrary.styles[currentSelectedStyle];
+                for (let cand of candidates) {
+                    const found = targetStyleSamples.find(s => s.alias === cand);
+                    if (found) return found.alias;
+                }
+            }
+
+            for (let cand of candidates) {
+                if (voiceLibrary.samples[cand]) return cand;
+            }
 
             const keys = Object.keys(voiceLibrary.samples);
-            const matchedKey = keys.find(k => k === renketsu || k.endsWith(' ' + char) || k.endsWith('_' + char) || k.startsWith(char));
-            if (matchedKey) return matchedKey;
+            const exact = keys.find(k => k === char);
+            if (exact) return exact;
 
-            const prefixes = ['_', '- ', 'あ ', 'い ', 'う ', 'え ', 'お ', 'ん '];
-            for (let p of prefixes) {
-                if (voiceLibrary.samples[p + char]) return p + char;
-            }
+            const partial = keys.find(k => k.endsWith(' ' + char) || k.endsWith('_' + char));
+            if (partial) return partial;
 
             return char;
         }
@@ -1032,7 +1028,7 @@
             if (!voiceLibrary || !voiceLibrary.samples) return Array.from(candidates);
 
             Object.keys(voiceLibrary.samples).forEach(alias => {
-                if (alias === char || alias.endsWith(' ' + char) || alias.endsWith('_' + char) || alias.includes(char)) {
+                if (alias === char || alias.endsWith(' ' + char) || alias.endsWith('_' + char) || alias === `- ${char}`) {
                     candidates.add(alias);
                 }
             });
@@ -1100,14 +1096,14 @@
                 
                 if (candidates.length > 0) {
                     let options = candidates.map(c => {
-                        const isRenketsu = c.includes(' ') || c.startsWith('-');
-                        const tag = isRenketsu ? ' (連続音/CVVC)' : '';
+                        const isRenketsu = c.includes(' ') && !c.startsWith('-');
+                        const tag = isRenketsu ? ' (連続音/CVVC)' : ' (単独音)';
                         return `<option value="${c}" ${c === currentAlias ? 'selected' : ''}>${c}${tag}</option>`;
                     }).join('');
                     selectHtml = `<select onchange="updateAliasValue(${i}, this.value)">${options}</select>`;
                 } else {
-                    const isRenketsu = currentAlias.includes(' ') || currentAlias.startsWith('-');
-                    const tag = isRenketsu ? ' (連続音/CVVC)' : '';
+                    const isRenketsu = currentAlias.includes(' ') && !currentAlias.startsWith('-');
+                    const tag = isRenketsu ? ' (連続音/CVVC)' : ' (単独音)';
                     selectHtml = `<span style="font-size:0.7em; color:var(--text-sub);">${currentAlias}${tag}</span>`;
                 }
 
@@ -1151,7 +1147,7 @@
             const aliasSelect = document.getElementById('modal-alias-select');
             aliasSelect.innerHTML = '';
             getCandidateAliases(char).forEach(c => {
-                const isRenketsu = c.includes(' ') || c.startsWith('-');
+                const isRenketsu = c.includes(' ') && !c.startsWith('-');
                 const tag = isRenketsu ? ' (連続音/CVVC)' : ' (単独音/その他)';
                 const opt = document.createElement('option'); opt.value = c; opt.textContent = `${c}${tag}`; aliasSelect.appendChild(opt);
             });
@@ -1412,17 +1408,14 @@
 
             let actualStartTime = startTime;
 
+            // 連続音・単独音に応じた先行発音とオーバーラップのオフセット計算
             if (isRenketsu && sample.preutter > 0) {
                 const effectivePreutter = sample.preutter / baseRate;
-                const effectiveOverlap = (sample.overlap > 0 ? sample.overlap : sample.preutter * 0.5) / baseRate;
+                const effectiveOverlap = (sample.overlap > 0 ? sample.overlap : sample.preutter * 0.3) / baseRate;
                 actualStartTime = Math.max(0, startTime - effectivePreutter + effectiveOverlap);
-            } else if (sample.preutter > 0) {
-                const effectivePreutter = sample.preutter / baseRate;
-                actualStartTime = Math.max(0, startTime - effectivePreutter * 0.3);
             }
 
-            let playLen = duration + (sample.overlap ? sample.overlap / baseRate : 0.08);
-
+            let playLen = duration;
             let lastNode = src;
 
             const smoothFilter = ctx.createBiquadFilter();
@@ -1444,27 +1437,30 @@
             }
 
             const gain = ctx.createGain();
-            const attackTime = isRenketsu ? (0.025 + (opts.smooth / 100) * 0.025) : (0.008 + (opts.smooth / 100) * 0.02);
-            const releaseTime = 0.03 + (opts.smooth / 100) * 0.04;
 
-            gain.gain.setValueAtTime(0, actualStartTime);
-
-            if (isRenketsu) {
-                const vFadeTime = Math.min(0.05, Math.max(0.02, (sample.preutter || 0.03) / baseRate));
-                gain.gain.linearRampToValueAtTime(opts.volume * 0.4, actualStartTime + vFadeTime);
-                gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime + vFadeTime);
-            } else {
-                gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime);
+            // --- クロスフェードの調整 ---
+            // クロスフェード時間幅の定義 (音素同士のつなぎ目を滑らかにする)
+            let crossfadeTime = 0.04; 
+            if (sample.overlap > 0) {
+                crossfadeTime = Math.min(0.08, Math.max(0.015, sample.overlap / baseRate));
+            } else if (isRenketsu) {
+                crossfadeTime = 0.05;
             }
 
-            gain.gain.setValueAtTime(opts.volume, actualStartTime + Math.max(attackTime, playLen - releaseTime));
-            gain.gain.linearRampToValueAtTime(0, actualStartTime + playLen);
+            const attackTime = crossfadeTime;
+            const fadeOutTime = Math.min(playLen * 0.5, crossfadeTime);
+            const actualEndTime = actualStartTime + playLen + fadeOutTime;
+
+            gain.gain.setValueAtTime(0, actualStartTime);
+            gain.gain.linearRampToValueAtTime(opts.volume, actualStartTime + attackTime);
+            gain.gain.setValueAtTime(opts.volume, actualStartTime + playLen);
+            gain.gain.linearRampToValueAtTime(0, actualEndTime);
 
             lastNode.connect(gain);
             gain.connect(dest);
 
             const sampleOffset = sample.offset || 0;
-            src.start(actualStartTime, sampleOffset, Math.max(0.02, playLen));
+            src.start(actualStartTime, sampleOffset, Math.max(0.02, playLen + fadeOutTime));
         }
 
         async function speakAll() {
@@ -1483,7 +1479,7 @@
                         const charDuration = baseDuration;
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
-                        const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
+                        const isRenketsu = chosenAlias.includes(' ') && !chosenAlias.startsWith('-');
                         
                         const startPoint = charIdx * POINTS_PER_CHAR;
                         const endPoint = startPoint + POINTS_PER_CHAR;
@@ -1537,7 +1533,7 @@
                         const charDuration = (s.durSeconds && s.durSeconds[charIdx]) ? s.durSeconds[charIdx] : (opts.speed * (p.durFactor || 1.0));
                         const chosenAlias = (s.selectedAliases && s.selectedAliases[charIdx]) ? s.selectedAliases[charIdx] : p.alias;
                         const sample = getSampleForAlias(chosenAlias, p.char);
-                        const isRenketsu = chosenAlias.includes(' ') || chosenAlias.startsWith('-');
+                        const isRenketsu = chosenAlias.includes(' ') && !chosenAlias.startsWith('-');
 
                         const startPoint = charIdx * POINTS_PER_CHAR;
                         const endPoint = startPoint + POINTS_PER_CHAR;
